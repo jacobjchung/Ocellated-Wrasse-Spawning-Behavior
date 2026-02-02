@@ -1,0 +1,29 @@
+---
+title: "Owrasse_Underwater_Behavior"
+format: pdf
+editor: visual
+---
+
+# Quick Intro
+
+This quarto document contains the code used to visualize data from UW_Nest_Behavioral_Cleaned. The goals of this project is to understand what factors influence the mating decisions that female Ocellated wrasse make. What makes *Symphodus ocellatus* (the ocellated wrasse) interesting is their 3 different male reproductive tactics. Additionally, there are large amounts of mate choice copying from the females, so much so that a male is up significantly more likely to spawn with a female if she observes another female with him ([Alonzo 2008](https://www.sciencedirect.com/science/article/pii/S0003347208000225)).
+
+The data used was collected live underwater by SCUBA divers in Corsica, Fr, in a 10 minute period.
+
+```{r}
+#Install and library important packages
+#install.packages('ggplot2')
+#install.packages('here')
+#install.packages('tidyverse')
+#install.packages('readxl')
+library(tidyverse)
+library(here)
+library(ggplot2)
+library(readxl)
+```
+
+Importing the data sheet
+
+```{r eval=FALSE}
+behavior_sheet <- read.e
+```
