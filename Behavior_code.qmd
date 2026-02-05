@@ -48,3 +48,19 @@ behavior_sheet_sep <- behavior_sheet %>%
   relocate(Day, .after = Month)
 head(behavior_sheet_sep)
 ```
+
+## Year totals
+
+For ease of comparison between years and months, this code will add up the total number of nests for each year.
+
+```{r}
+
+```
+
+## By male totals
+
+For comparisons between the male reproductive tactics, this code will add up the total and create a new column for each of the variables by male (i.e. Column for total amount of Female visits by SAT, Column for total amount of SAT only spawns).
+
+```{r}
+
+```
