@@ -20,11 +20,13 @@ First run our library list (Install first if you don't have these packages).
 #install.packages('here')
 #install.packages('tidyverse')
 #install.packages('readxl')
+#install.packages('brms')
 library(tidyverse)
 library(here)
 library(ggplot2)
 library(readxl)
 library(dplyr)
+library(brms)
 ```
 
 Importing the data sheet
