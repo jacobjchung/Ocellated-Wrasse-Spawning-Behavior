@@ -17,8 +17,11 @@ One of the major trade-offs that species experience are mating decisions. Courte
 Social information has been found to have a significant impact across species with processes like mate choice copying being highly prevelant across taxa. However, much of social information in mate choice research has focused on if individuals have the ability to learn preferences from observing others, rather than how individuals use social influence to make decisions under specific contexts. With high potential of informing what decisions individuals make, it has become increasingly important to research the effects of social information.
 
 Enter *Symphodus ocellatus* a small wrasse that is found throughout the Mediterranean, Eastern Altantic, and Black Sea.
+
 ![Picture of the Wrasse](Ocellated_Wrasse_Image.jpeg)
 Artist credit: Clara Lacy
+
+
 What makes the ocellated wrasse such an interesting study system for mate choice is the presence of three male reproductive tactics.
 
 First, there are the nesting males, which build nests from algae, court and spawn with females, then provide parental care until all eggs in his nest hatch.
@@ -30,6 +33,7 @@ Lastly, there are the traditional sneaker males, who wait around a nest for a ch
 Interestingly enough, there are no known genetic determiners of which male an individual will be, and it has been found that growth rate during the juvenile stage plays a role in determining which reproductive tactic an indivudal will be. After their first year, males then "move up" to the nest tactic, i.e. sneaker males become satellites, satellites become nesting males. With a lifespan of 2-3 years, nesting males die after the breeding season.
 
 If the multiple reproductive tactics weren't cool enough, there are also high levels of mate choice copying in this species. Nesting males are likely to be successful if a female observes other females spawning with or being around him and his nest. There are no known male traits or nest characteristics that drive female mate choice. Thus the social environment places a large role in the mate choice decision making process in this species.
+
 ![Alonzo 2008 figure](Alonzo_2008_Owrasse.png)
 Reference: Alonzo, S. H. (2008). Female mate choice copying affects sexual selection in wild populations of the ocellated wrasse. Animal Behaviour, 75(5), 1715–1723. https://doi.org/10.1016/j.anbehav.2007.09.031
 
