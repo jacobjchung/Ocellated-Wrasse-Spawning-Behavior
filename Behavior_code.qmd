@@ -71,8 +71,10 @@ yearly_totals <- behavior_sheet_sep |>
            ~ sum(.x, na.rm = TRUE))
   )
 
-yearly_totals
+head(yearly_totals)
 ```
+
+### Exploratory graphs looking between the years
 
 ## By male totals
 
