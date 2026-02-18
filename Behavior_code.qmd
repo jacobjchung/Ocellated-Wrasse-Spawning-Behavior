@@ -52,6 +52,16 @@ behavior_sheet_sep <- behavior_sheet %>%
   relocate(Month, .after = Year) %>%
   relocate(Day, .after = Month)
 head(behavior_sheet_sep)
+
+#Fix SAT submission to NM from chr to num
+sat_sub <- as.numeric(behavior_sheet_sep$`SAT submission to NM`) #Creates a vector with the same entries but as numbers
+behavior_sheet_sep$`SAT submission to NM` <- sat_sub #put it back into the tibble
+#Do the same for SNK Submission to SAT
+snk_sub <- as.numeric(behavior_sheet_sep$`SNK submission to SAT`)
+behavior_sheet_sep$`SNK submission to SAT` <- snk_sub
+#Same for NM aggression to SAT
+NM_aggsat <- as.numeric(behavior_sheet_sep$`NM aggression to SAT`)
+behavior_sheet_sep$`NM aggression to SAT` <- NM_aggsat
 ```
 
 ## Year totals
@@ -59,9 +69,6 @@ head(behavior_sheet_sep)
 For ease of comparison between years and months, this code will add up the total number of nests for each year.
 
 ```{r}
-#Fix SAT submission to NM from chr to num
-sat_sub <- as.numeric(behavior_sheet_sep$`SAT submission to NM`)
-behavior_sheet_sep$`SAT submission to NM` <- sat_sub
 
 yearly_totals <- behavior_sheet_sep |>
   group_by(Year) |>
@@ -336,15 +343,47 @@ T_SNK_spawns_only <- yearly_totals |>
 T_SNK_spawns_only
 ```
 
-### Other, Not Year Specific, Exploratory graphs
+### Other, Not Year Specific, Exploratory graphs and stats
 
 #### Female visits and Female Spawns
 
-Presumably, more visits should = more spawns is this true?
+Presumably, more visits should = more spawns is this true? We use total female visits instead of total female spawning because female visits counts the females that leave the nest without spawning, while total female spawning only counts individuals who spawned.
+
+##### This is the exploratory graph
 
 ```{r}
+f_visits_spawns <- behavior_sheet_sep |>
+  ggplot(aes(`Total Female Visits`, `Total Spawns`)) +
+  geom_point() +
+  #Add a linear model line for visualization
+  geom_smooth(method = 'lm') +
+  labs(title = 'Total Spawns as Function of Total Female Visits') +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
+  
 
+f_visits_spawns
 ```
+
+##### This is the exploratory model
+
+```{r}
+#Changing the format of the columns to work with brms
+f.tpsawns.tvisits <- rename(behavior_sheet_sep, total.spawns = 'Total Spawns', total.female.visits = 'Total Female Visits')
+
+#Total spawns as a function of total female visits
+f.tspawns.tvisits.mdl <- brm(data = f.tpsawns.tvisits,
+      family = gaussian,
+      total.spawns ~ total.female.visits,
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 4,
+      file = 'output/f.tspawns.tvisits')
+
+summary(f.tspawns.tvisits.mdl)
+plot(f.tspawns.tvisits.mdl)
+```
+
+Given our model, we can suggest that for every female visit, there is a 0.59 increase in the total spawns at that nest. Our 95% credibility interval gives us 0.51-0.67, allowing us to suggest that this effect is different from zero. This matches our expectation because with every visit to a nest, we would expect a general increase in the total number of spawns at a nest (however not complete because remember, some females don't spawn.
 
 #### Nesting Male aggression effect on Female visits and spawns
 
