@@ -72,6 +72,7 @@ This chunk will be useful when creating and running models later on because it "
 
 ```{r}
 behavior_sheet_cln <- behavior_sheet_sep |>
+  #Uses the Janitor package to standardize the names
   clean_names()
 ```
 
@@ -111,13 +112,13 @@ head(yearly_totals) #Double Check
 ```{r}
 avg_snk_years <- yearly_totals |>
   ggplot(aes(x = Year_axis, y = avg_SNKR, fill = Year_axis)) + #gives ggplot the dimensions
-  geom_bar(stat = 'identity') + 
+  geom_bar(stat = 'identity') + #makes the plot a bar/column chart
   labs(x = 'Year', 
        y = 'Average number of Sneakers',
        title = "Number of Sneakers Between the Years",
        fill = 'Year
        ') + #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars
 avg_snk_years
@@ -145,13 +146,13 @@ NM_in_near.long <- NM_in_near %>%
 
 
 NM_in_near.long %>%
-  ggplot(aes(Year_axis, perc_time, fill = distance)) +
-  geom_col() +
+  ggplot(aes(Year_axis, perc_time, fill = distance)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
     labs(x = 'Year', 
        y = 'Percent of time',
        title = "Percent of time the Nesting male spent around his nest",
        fill = 'Distance') + #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars
 
@@ -165,13 +166,13 @@ SAT.presence <- yearly_totals |>
   mutate('SatP_perN' = (`# SAT Present`/total_nests)*10, .after = 7) #creates the column with the percentage, multiplied by 10 to get to percentage
 
 SAT.presence.plot <- SAT.presence |>
-  ggplot(aes(Year_axis, SatP_perN, fill = Year_axis)) +
-  geom_bar(stat = 'identity') +
+  ggplot(aes(Year_axis, SatP_perN, fill = Year_axis)) + #gives ggplot dimensions
+  geom_bar(stat = 'identity') + #makes the plot a bar/column chart
   labs(x = 'Year', 
        y = 'Average Sat presence per nest',
        title = "Percent of time the Satellite was present at a Nest",
        fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars
 
@@ -182,14 +183,15 @@ SAT.presence.plot
 
 ```{r}
 T_female_visits <- yearly_totals |>
+  #creates a variable that is the average female visits per nest
   mutate('visits_p_nest' = (`Total Female Visits`)/total_nests) |>
-  ggplot(aes(Year_axis, visits_p_nest, fill = Year_axis)) +
-  geom_col() +
+  ggplot(aes(Year_axis, visits_p_nest, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
   labs(x = 'Year', 
       y = 'Female visits per nest',
       title = "Average Female visits per nest between years",
       fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars
   
@@ -205,13 +207,13 @@ This is different from the next graph, because this is the number of females tha
 A_female_spawns <- yearly_totals |>
   #Gets average total female spawns between the years
   mutate('avg_fspawns_nest' = (`Total Female Spawning`)/total_nests) |>
-  ggplot(aes(Year_axis, avg_fspawns_nest, fill = Year_axis)) +
-  geom_col() +
+  ggplot(aes(Year_axis, avg_fspawns_nest, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
   labs(x = 'Year', 
       y = 'Number of Females spawn per nest',
       title = "Average number of Female that spawn per nest between years",
       fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars
   
@@ -225,13 +227,13 @@ T_total_spawns <- yearly_totals |>
   #Creates the column of total spawns per nest
   mutate('total_spawns_p_nest' = (`Total Spawns`)/total_nests) |>
   #Creates the plot
-  ggplot(aes(Year_axis, total_spawns_p_nest, fill = Year_axis)) +
-  geom_col() +
+  ggplot(aes(Year_axis, total_spawns_p_nest, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
   labs(x = 'Year', 
       y = 'Total spawns per nest',
       title = "Average Total spawns per nest between years",
       fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars
   
@@ -247,13 +249,13 @@ This graph adds up all the columns that indicate Nesting male spawns and compare
 T_NM_spawns <- yearly_totals |>
   #Average total nesting male spawns 
   mutate('total_NM_spawns' = (`Total Spawns NM brought` + `Total spawns SAT passed to NM` + `Total Spawns SAT Brought` + `Total Spawns SNK brought`)/total_nests) |>
-  ggplot(aes(Year_axis, total_NM_spawns, fill = Year_axis)) +
-  geom_col() +
+  ggplot(aes(Year_axis, total_NM_spawns, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
   labs(x = 'Year', 
       y = 'Total NM spawns per nest',
       title = "Average Total Nesting Male spawns per nest between years",
       fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars  
   
@@ -266,14 +268,15 @@ This graph adds up all the columns that indicate Satellite spawns and compares b
 
 ```{r}
 T_SAT_spawns <- yearly_totals |>
+  #Creates a variable that is the total amount of SAT spawns
   mutate('T_SAT_spawn' = (`Total spawns NM brought, SAT only spawn` + `Total spawns SAT passed to NM but SAT only spawn` + `Total Spawns SAT brought, SAT only spawn`)/total_nests) |>
-  ggplot(aes(Year_axis, T_SAT_spawn, fill = Year_axis)) +
-  geom_col() +
+  ggplot(aes(Year_axis, T_SAT_spawn, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
   labs(x = 'Year', 
       y = 'Total SAT spawns per nest',
       title = "Average Total Satellite Male shared spawns per nest between years",
       fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars  
   
@@ -284,14 +287,15 @@ This graph will count Satellite *sneak* spawns (note this does include sneaker s
 
 ```{r}
 T_SAT_sneaks <- yearly_totals |>
+  #Creates a variable that is all the sneak spawns of the SAT
   mutate('T_SAT_sneak' = (`Female visit NM brought, Sneaks SAT + SNK` + `Female visit NM brought, Sneaks SAT only` + `Female visit SAT pass NM, Sneaks SAT + SNK` + `Female visit SAT pass NM, Sneak SAT only` + `Female visit SAT only, Sneaks SAT + SNK` + `Female visit SAT only, Sneaks SAT only` + `Female visit SNK only, Sneaks SAT + SNK` + `Female visit SNK only, Sneaks SAT only`)/total_nests) |>
-  ggplot(aes(Year_axis, T_SAT_sneak, fill = Year_axis)) +
-  geom_col() +
+  ggplot(aes(Year_axis, T_SAT_sneak, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
   labs(x = 'Year', 
       y = 'Total SAT spawns per nest',
       title = "Average Total Satellite Male sneak spawns per nest between years",
       fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars  
   
@@ -302,14 +306,15 @@ This graph will do total SAT spawns, both shared and sneak
 
 ```{r}
 T_SAT_spawns_both <- yearly_totals |>
+  #Creates a variable that is the total of both types of SAT spawns
   mutate('T_SAT_spawn_both' = (`Total spawns NM brought, SAT only spawn` + `Total spawns SAT passed to NM but SAT only spawn` + `Total Spawns SAT brought, SAT only spawn` + `Female visit NM brought, Sneaks SAT + SNK` + `Female visit NM brought, Sneaks SAT only` + `Female visit SAT pass NM, Sneaks SAT + SNK` + `Female visit SAT pass NM, Sneak SAT only` + `Female visit SAT only, Sneaks SAT + SNK` + `Female visit SAT only, Sneaks SAT only` + `Female visit SNK only, Sneaks SAT + SNK` + `Female visit SNK only, Sneaks SAT only`)/total_nests) |>
-  ggplot(aes(Year_axis, T_SAT_spawn_both, fill = Year_axis)) +
-  geom_col() +
+  ggplot(aes(Year_axis, T_SAT_spawn_both, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
   labs(x = 'Year', 
       y = 'Total SAT spawns per nest',
       title = "Average Total Satellite Male spawns per nest between years",
       fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars  
   
@@ -322,14 +327,15 @@ This graph adds up all the columns that indicate Sneaker male spawns and compare
 
 ```{r}
 T_SNK_spawns <- yearly_totals |>
+  #Average Total sneaker spawns per nest, includes SAT variables
   mutate('total_sneaks' = (`Total Spawns SNK brought, SNK only spawn` + `Female visit NM brought, Sneaks SAT + SNK` + `Female visit NM brought, Sneaks SNK only` + `Female visit SAT pass NM, Sneaks SAT + SNK` + `Female visit SAT pass NM, Sneak SNK only` + `Female visit SAT only, Sneaks SAT + SNK` + `Female visit SAT only, Sneaks SNK only` + `Female visit SNK only, Sneaks SAT + SNK` + `Female visit SNK only, Sneaks SNK only`)/total_nests) |>
-  ggplot(aes(Year_axis, total_sneaks, fill = Year_axis)) +
-  geom_col() +
+  ggplot(aes(Year_axis, total_sneaks, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
   labs(x = 'Year', 
       y = 'Total Sneaker spawns per nest',
       title = "Average Total Sneaker Male spawns per nest between years",
       fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars 
 
@@ -340,14 +346,15 @@ Graph is for sneakers only
 
 ```{r}
 T_SNK_spawns_only <- yearly_totals |>
+  #Average total snaker spawns per nest, sneaker
   mutate('total_sneaks_only' = (`Total Spawns SNK brought, SNK only spawn`+ `Female visit NM brought, Sneaks SNK only` +`Female visit SAT pass NM, Sneak SNK only` + `Female visit SAT only, Sneaks SNK only` + `Female visit SNK only, Sneaks SNK only`)/total_nests) |>
-  ggplot(aes(Year_axis, total_sneaks_only, fill = Year_axis)) +
-  geom_col() +
+  ggplot(aes(Year_axis, total_sneaks_only, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
   labs(x = 'Year', 
       y = 'Total Sneaker only spawns per nest',
       title = "Average Total Sneaker Male spawns per nest between years",
       fill = 'Year') +  #edits axis and title labels
-  theme_classic() + 
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   scale_fill_brewer(palette = "Dark2") #Colors the bars 
 
@@ -364,12 +371,11 @@ Presumably, more visits should = more spawns is this true? We use total female v
 
 ```{r}
 f_visits_spawns <- behavior_sheet_sep |>
-  ggplot(aes(`Total Female Visits`, `Total Spawns`)) +
-  geom_point() +
-  #Add a linear model line for visualization
-  geom_smooth(method = 'lm') +
+  ggplot(aes(`Total Female Visits`, `Total Spawns`)) + #gives ggplot dimensions
+  geom_point() + #makes the plot a scatterplot
+  geom_smooth(method = 'lm') +  #Add a linear model line for visualization
   labs(title = 'Total Spawns as Function of Total Female Visits') +
-  theme_classic() +
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
   
 
@@ -381,15 +387,15 @@ f_visits_spawns
 ```{r}
 
 #Total spawns as a function of total female visits
-f.tspawns.tvisits.mdl <- brm(data = behavior_sheet_cln,
-      family = gaussian,
-      total_spawns ~ total_female_visits,
-      iter = 2000, warmup = 1000, chains = 4, cores = 4,
-      seed = 4,
-      file = 'output/f.tspawns.tvisits')
+f.tspawns.tvisits.mdl <- brm(data = behavior_sheet_cln, #Gives the model the tibble
+      family = gaussian, #Tells the model what distribution to use
+      total_spawns ~ total_female_visits, #specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Specifying Markov chain parameters
+      seed = 4, #Determines which random numbers will get sampled
+      file = 'output/f.tspawns.tvisits') #Saves the model as an object for outputting later
 
-summary(f.tspawns.tvisits.mdl)
-plot(f.tspawns.tvisits.mdl)
+summary(f.tspawns.tvisits.mdl) #Gives us model summary
+plot(f.tspawns.tvisits.mdl) #plots the Markov chains
 ```
 
 Given our model, we can suggest that for every female visit, there is a 0.59 increase in the total spawns at that nest. Our 95% credibility interval gives us 0.51-0.67, allowing us to suggest that this effect is different from zero. This matches our expectation because with every visit to a nest, we would expect a general increase in the total number of spawns at a nest (however not complete because remember, some females don't spawn.
@@ -405,13 +411,13 @@ fvisits.nmagg <- behavior_sheet_cln |>
   #creates a variable that is a total of all NM agression
   mutate('total_nm_agg' = nm_aggression_to_sat + nm_aggression_to_snk + nm_aggression_to_other_nm + nest_defence_nm_to_other_spp) |>
   #Plotting previous variable to female visits
-  ggplot(aes(total_nm_agg, total_female_visits)) +
-  geom_point() +
-  geom_smooth() +
+  ggplot(aes(total_nm_agg, total_female_visits)) + #gives ggplot dimensions
+  geom_point() + #makes the plot a scatterplot
+  geom_smooth() + #adds a trendline for the plot
   labs(x = 'Total Nesting Male Aggression Behaviors',
        y = 'Total Female Visits',
-       title = 'Total Visits as Function of Total Nesting Male Aggression') +
-  theme_classic() +
+       title = 'Total Visits as Function of Total Nesting Male Aggression') + #Makes labels
+  theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
 
 fvisits.nmagg
@@ -420,25 +426,67 @@ fvisits.nmagg
 ##### Female visits as a function of Nesting Male aggression model
 
 ```{r}
-f.visits.nmagg <- behavior_sheet_cln |>
+fvisits.nmagg <- behavior_sheet_cln |>
   #creates a variable that is a total of all NM agression
   mutate('total_nm_agg' = nm_aggression_to_sat + nm_aggression_to_snk + nm_aggression_to_other_nm + nest_defence_nm_to_other_spp)
 
-f.visits.nmagg.mdl <-
-  brm(data = f.visits.nmagg,
-      family = gaussian,
-      total_spawns ~ total_nm_agg,
-      iter = 2000, warmup = 1000, chains = 4, cores = 4,
-      seed = 4,
-      file = 'output/f.visits.nmagg.mdl')
+fvisits.nmagg.mdl <-
+  brm(data = fvisits.nmagg, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ total_nm_agg, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'output/fvisits.nmagg.mdl') #saves it as an output
 
-summary(f.visits.nmagg.mdl)
-plot(f.visits.nmagg.mdl)
-      
-    
+summary(fvisits.nmagg.mdl)
+plot(fvisits.nmagg.mdl)
 ```
 
-Given our model, we can suggest that total nesting male aggression does not have a greater than zero effect on total female visits to the nest. This does make sense since aggression in this case is not towards the female so we would not expect a notable effect. However, this model is very simplistic and not at all fully addressing this question, but we wanted to create an exploratory model for it.
+Given our model, we can suggest that total nesting male aggression does have a different from zero effect on total female visits to the nest. Biologically, this does make sense. A more active Nesting Male is a sign of an active nest for a female, additionally, more nesting male movement increases the chances that a female spots a nest.
+
+##### Female spawns as a function of Nesting Male aggression
+
+```{r}
+f.spawns.nmagg <- behavior_sheet_cln |>
+  #creates a variable that is a total of all NM agression
+  mutate('total_nm_agg' = nm_aggression_to_sat + nm_aggression_to_snk + nm_aggression_to_other_nm + nest_defence_nm_to_other_spp) |>
+  #Plotting previous variable to female visits
+  ggplot(aes(total_nm_agg, total_spawns)) + #gives ggplot dimensions
+  geom_point() + #makes the plot a scatterplot
+  geom_smooth() + #adds a trendline for the plot
+  labs(x = 'Total Nesting Male Aggression Behaviors',
+       y = 'Total Female Spawns',
+       title = 'Total Spawns as Function of Total Nesting Male Aggression') + #Makes labels
+  theme_classic() + #Sets the plot visuals
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
+
+f.spawns.nmagg
+```
+
+##### Female spawns as a function of Nesting Male aggression model
+
+```{r}
+f.spawns.nmagg <- behavior_sheet_cln |>
+  #creates a variable that is a total of all NM agression
+  mutate('total_nm_agg' = nm_aggression_to_sat + nm_aggression_to_snk + nm_aggression_to_other_nm + nest_defence_nm_to_other_spp)
+
+f.spawns.nmagg.mdl <-
+  brm(data = f.visits.nmagg, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_spawns ~ total_nm_agg, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'output/f.visits.nmagg.mdl') #saves it as an output
+
+summary(f.spawns.nmagg.mdl) #Gives a summary of the model
+plot(f.spawns.nmagg.mdl) #Plots the chains
+```
+
+Given our model, we can suggest that Nesting male aggression does not have a different from zero effect on total spawns at a nest. This can be explained biologically. A more active Nesting Male has to spend greater time executing the aggressive behaviors, which means he has less time to spawn at the nest, which could possibly explain the models lower 95% credibility interval of -0.03 (i.e. a nesting male spent so much time with aggressive behaviors that a female chose to leave before spawning).
+
+#### NOTE: 
+
+These models are something to think on more. It seems productive for a female to go to a nest with an active aggressive nesting male, since it indicates mating success, however, there is a point at which he is spending too much time being aggressive that females leave without spawning. Is this because the females no longer want to spawn with him for being too aggressive, or is it because they had to wait to long? Is a female be able to tell the "amount" of active a nesting male is before she visits the nest?
 
 #### Satellite Male aggression effect on Female Visits and Spawns
 
@@ -447,18 +495,72 @@ This adds up all the columns related to Satellite male aggression (Except aggres
 ##### Female visits as a function of Satellite Male aggression
 
 ```{r}
+f.visits.satagg <- behavior_sheet_cln |>
+  ggplot(aes(sat_aggression_to_snk, total_female_visits)) + #gives ggplot dimensions
+  geom_point() + #makes the plot a scatterplot
+  geom_smooth() + #adds a trendline for the plot
+  labs(x = 'Total Satellite Male Aggression Behaviors',
+       y = 'Total Female Visits',
+       title = 'Total Visits as Function of Total Satellite Male Aggression') + #Makes labels
+  theme_classic() + #Sets the plot visuals
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
 
+f.visits.satagg
 ```
+
+##### Female Visits as a function of Satellite Male aggression
+
+```{r}
+f.visits.satagg.mdl <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ sat_aggression_to_snk, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'output/f.visits.satagg.mdl') #saves it as an output
+
+summary(f.visits.satagg.mdl)
+plot(f.visits.satagg.mdl)
+```
+
+Given our model, we can suggest that sat aggression behaviors effect on female visits to a nest are not different from zero. This could make sense. If a SAT is more focused on being aggressive to sneakers, then he is spending less time focusing on females, thus his behavior has no real effect on female visits. Like our model gives us (albeit not significant in any way) we would expect a small positive effect, since more sat aggressive behavior means more sneakers which indicates to females nest activity.
 
 ##### Female spawns as a function of Satellite Male aggression
 
 ```{r}
+f.spawns.satagg <- behavior_sheet_cln |>
+  ggplot(aes(sat_aggression_to_snk, total_spawns)) + #gives ggplot dimensions
+  geom_point() + #makes the plot a scatterplot
+  geom_smooth() + #adds a trendline for the plot
+  labs(x = 'Total Satellite Male Aggression Behaviors',
+       y = 'Total Spawns',
+       title = 'Total Spawns as Function of Total Satellite Male Aggression') + #Makes labels
+  theme_classic() + #Sets the plot visuals
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
 
+f.spawns.satagg
 ```
+
+##### Female spawns as a function of Satellite male aggression model
+
+```{r}
+f.spawns.satagg.mdl <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_spawns ~ sat_aggression_to_snk, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'output/f.spawns.satagg.mdl') #saves it as an output
+
+summary(f.spawns.satagg.mdl)
+plot(f.spawns.satagg.mdl)
+```
+
+Like previous, given our model Satellite male aggressive behaviors effect of total spawns at a nest are not different from zero. However, the models estimate of -0.05 is interesting. Say the model was different from zero, then there would be a negative effect of satellite male aggression on total spawns. Why would this be the case for Satellite males and not Nesting males? Is it because if a satellite is being more aggressive that means the nest is too active and the females don't want to spawn with so many sneakers around? Something to think about.
 
 #### Satellite and Nesting Male aggression to Females, away and towards the nest
 
-We would expect any aggression to have negative impacts on female spawns, possibly also visits
+We would expect any aggression to have negative impacts on female spawns, possibly also visits. (Note, if different than zero effects are found, it might be worth parsing which male has the greater effect).
 
 ##### Female visits as a function of Nesting and Satellite aggression towards the nest
 
@@ -472,23 +574,29 @@ We would expect any aggression to have negative impacts on female spawns, possib
 
 ```
 
-##### Female visits as a function of Nesting and Satellite aggression away from the nest
+##### Female visits as a function of Nesting and Satellite aggression away from the nest model
 
 ```{r}
 
 ```
 
-##### Female spawns as a function of Nesting and Satellite aggression away from the nest
+##### Female spawns as a function of Nesting and Satellite aggression away from the nest model
 
 ```{r}
 
 ```
 
-#### Sneaker Presence and Female Visits
+#### Sneaker Presence and Female Visits and Spawns
 
 From previous research it has been found that females use the presence of sneakers as a proxy for Nesting Male success, this graph will observe this.
 
 ##### Female visits as a function of number of sneakers at a nest
+
+```{r}
+
+```
+
+##### Female spawns as a function of number of sneakers at a nest
 
 ```{r}
 
@@ -578,7 +686,7 @@ These graphs will look at the relationship between which male type brings the fe
 
 ```
 
-##### Female visits as a function of being brought by a sneaker male 
+##### Female visits as a function of being brought by a sneaker male
 
 ```{r}
 
