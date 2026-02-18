@@ -401,14 +401,44 @@ This adds up all the columns related to Nesting male aggression (Except aggressi
 ##### Female visits as a function of Nesting Male aggression
 
 ```{r}
+fvisits.nmagg <- behavior_sheet_cln |>
+  #creates a variable that is a total of all NM agression
+  mutate('total_nm_agg' = nm_aggression_to_sat + nm_aggression_to_snk + nm_aggression_to_other_nm + nest_defence_nm_to_other_spp) |>
+  #Plotting previous variable to female visits
+  ggplot(aes(total_nm_agg, total_female_visits)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = 'Total Nesting Male Aggression Behaviors',
+       y = 'Total Female Visits',
+       title = 'Total Visits as Function of Total Nesting Male Aggression') +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
 
+fvisits.nmagg
 ```
 
-##### Female spawns as a function of Nesting Male aggression
+##### Female visits as a function of Nesting Male aggression model
 
 ```{r}
+f.visits.nmagg <- behavior_sheet_cln |>
+  #creates a variable that is a total of all NM agression
+  mutate('total_nm_agg' = nm_aggression_to_sat + nm_aggression_to_snk + nm_aggression_to_other_nm + nest_defence_nm_to_other_spp)
 
+f.visits.nmagg.mdl <-
+  brm(data = f.visits.nmagg,
+      family = gaussian,
+      total_spawns ~ total_nm_agg,
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 4,
+      file = 'output/f.visits.nmagg.mdl')
+
+summary(f.visits.nmagg.mdl)
+plot(f.visits.nmagg.mdl)
+      
+    
 ```
+
+Given our model, we can suggest that total nesting male aggression does not have a greater than zero effect on total female visits to the nest. This does make sense since aggression in this case is not towards the female so we would not expect a notable effect. However, this model is very simplistic and not at all fully addressing this question, but we wanted to create an exploratory model for it.
 
 #### Satellite Male aggression effect on Female Visits and Spawns
 
