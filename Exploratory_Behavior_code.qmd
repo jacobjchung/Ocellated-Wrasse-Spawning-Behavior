@@ -398,7 +398,11 @@ summary(f.tspawns.tvisits.mdl) #Gives us model summary
 plot(f.tspawns.tvisits.mdl) #plots the Markov chains
 ```
 
-Given our model, we can suggest that for every female visit, there is a 0.59 increase in the total spawns at that nest. Our 95% credibility interval gives us 0.51-0.67, allowing us to suggest that this effect is different from zero. This matches our expectation because with every visit to a nest, we would expect a general increase in the total number of spawns at a nest (however not complete because remember, some females don't spawn.
+Given our model, we can suggest that for every female visit, there is a 0.59 increase in the total spawns at that nest. Our 95% credibility interval gives us 0.51-0.67, allowing us to suggest that this effect is different from zero. This matches our expectation because with every visit to a nest, we would expect a general increase in the total number of spawns at a nest (however not complete because remember, some females don't spawn).
+
+#### Note:
+
+At lower numbers of female visits, there seem to be much less variation than there is when there are high number of female visits. This is both intuitive, and counter intuitive. Intuitive in the sense that, at lower nest visits, there are less number of spawns because there are lower number of females visiting; while at high nest visits, there is more opportunity for females to not spawn and leave. However, it is counter intuitive because, previous research suggests that mate choice copying is the primary driver of female spawning decisions, so we would expect that higher visitation rates (meaning more females around the nest in general, meaning higher chances of females observing other females spawning) we would have spawning rates that are *consistent*.
 
 #### Nesting Male aggression effect on Female visits and spawns
 
@@ -484,7 +488,7 @@ plot(f.spawns.nmagg.mdl) #Plots the chains
 
 Given our model, we can suggest that Nesting male aggression does not have a different from zero effect on total spawns at a nest. This can be explained biologically. A more active Nesting Male has to spend greater time executing the aggressive behaviors, which means he has less time to spawn at the nest, which could possibly explain the models lower 95% credibility interval of -0.03 (i.e. a nesting male spent so much time with aggressive behaviors that a female chose to leave before spawning).
 
-#### NOTE: 
+#### NOTE:
 
 These models are something to think on more. It seems productive for a female to go to a nest with an active aggressive nesting male, since it indicates mating success, however, there is a point at which he is spending too much time being aggressive that females leave without spawning. Is this because the females no longer want to spawn with him for being too aggressive, or is it because they had to wait to long? Is a female be able to tell the "amount" of active a nesting male is before she visits the nest?
 
