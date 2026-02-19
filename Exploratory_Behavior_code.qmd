@@ -17,12 +17,14 @@ First run our library list (Install first if you don't have these packages).
 ```{r}
 #Install and library important packages
 #install.packages('ggplot2')
+#install.packages('ggeffects')
 #install.packages('RColorBrewer')
 #install.packages('here')
 #install.packages('tidyverse')
 #install.packages('janitor')
 #install.packages('readxl')
 #install.packages('brms')
+library(ggeffects)
 library(tidyverse)
 library(janitor)
 library(here)
@@ -373,7 +375,7 @@ Presumably, more visits should = more spawns is this true? We use total female v
 f_visits_spawns <- behavior_sheet_sep |>
   ggplot(aes(`Total Female Visits`, `Total Spawns`)) + #gives ggplot dimensions
   geom_point() + #makes the plot a scatterplot
-  geom_smooth(method = 'lm') +  #Add a linear model line for visualization
+  geom_smooth() +  #Add a linear model line for visualization
   labs(title = 'Total Spawns as Function of Total Female Visits') +
   theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
@@ -385,20 +387,23 @@ f_visits_spawns
 ##### This is the exploratory model
 
 ```{r}
-
 #Total spawns as a function of total female visits
-f.tspawns.tvisits.mdl <- brm(data = behavior_sheet_cln, #Gives the model the tibble
-      family = gaussian, #Tells the model what distribution to use
+f.tspawns.tvisits.mdl <- 
+      brm(data = behavior_sheet_cln, #Gives the model the tibble
+      family = poisson, #Tells the model what distribution to use
       total_spawns ~ total_female_visits, #specifying the model
       iter = 2000, warmup = 1000, chains = 4, cores = 4, #Specifying Markov chain parameters
       seed = 4, #Determines which random numbers will get sampled
-      file = 'Exploratory model outputs/f.tspawns.tvisits') #Saves the model as an object for outputting later
+      file = 'Exploratory model outputs/f.tspawns.tvisits.mdl') #Saves the model as an object for outputting later
+
+preds <- predict_response(f.tspawns.tvisits.mdl)
+plot(preds, show_data = TRUE)
 
 summary(f.tspawns.tvisits.mdl) #Gives us model summary
 plot(f.tspawns.tvisits.mdl) #plots the Markov chains
 ```
 
-Given our model, we can suggest that for every female visit, there is a 0.59 increase in the total spawns at that nest. Our 95% credibility interval gives us 0.51-0.67, allowing us to suggest that this effect is different from zero. This matches our expectation because with every visit to a nest, we would expect a general increase in the total number of spawns at a nest (however not complete because remember, some females don't spawn).
+Given our model, we can suggest that for every female visit, there is a 0.05 increase in the total spawns at that nest. Our 95% credibility interval gives us 0.05-0.06, allowing us to suggest that this effect is different from zero. This matches our expectation because with every visit to a nest, we would expect a general increase in the total number of spawns at a nest (however not complete because remember, some females don't spawn).
 
 #### Note:
 
