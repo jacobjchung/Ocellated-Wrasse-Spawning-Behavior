@@ -569,25 +569,61 @@ We would expect any aggression to have negative impacts on female spawns, possib
 ##### Female visits as a function of Nesting and Satellite aggression towards the nest
 
 ```{r}
+f.v.nestsat.agg2nest <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ nm_aggression_to_female_towards_nest + sat_aggression_to_female_towards_nest, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'output/f.v.nestsat.agg2nest') #saves it as an output
 
+summary(f.v.nestsat.agg2nest)
+plot(f.v.nestsat.agg2nest)
 ```
 
 ##### Female spawns as a function of Nesting and Satellite aggression towards the nest
 
 ```{r}
+f.s.nestsat.agg2nest <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_spawns ~ nm_aggression_to_female_towards_nest + sat_aggression_to_female_towards_nest, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'output/f.s.nestsat.agg2nest') #saves it as an output
 
+summary(f.s.nestsat.agg2nest)
+plot(f.s.nestsat.agg2nest)
 ```
 
-##### Female visits as a function of Nesting and Satellite aggression away from the nest model
+##### Female visits as a function of Nesting and Satellite aggression away from the nest model (there is no Satellite aggression away from the nest variable)
 
 ```{r}
+f.v.nestsat.aggawaynest <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ nm_aggresion_to_female_away_from_nest, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'output/f.v.nestsat.aggawaynest') #saves it as an output
 
+summary(f.v.nestsat.aggawaynest)
+plot(f.v.nestsat.aggawaynest)
 ```
 
-##### Female spawns as a function of Nesting and Satellite aggression away from the nest model
+##### Female spawns as a function of Nesting and Satellite aggression away from the nest model (there is no Satellite aggression away from the nest variable)
 
 ```{r}
+f.s.nestsat.aggawaynest <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_spawns ~ nm_aggresion_to_female_away_from_nest, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'output/f.s.nestsat.aggawaynest') #saves it as an output
 
+summary(f.s.nestsat.aggawaynest)
+plot(f.s.nestsat.aggawaynest)
 ```
 
 #### Sneaker Presence and Female Visits and Spawns
