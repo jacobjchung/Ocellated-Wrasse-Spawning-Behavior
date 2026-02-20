@@ -770,23 +770,59 @@ These graphs will look at the relationship between which male type brings the fe
 ##### Female visits as a function of being brought by Nesting male
 
 ```{r}
+fv.brought.by.nm <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ female_visits_by_nm, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fv.brought.by.nm') #saves it as an output
 
+summary(fv.brought.by.nm)
+plot(fv.brought.by.nm)
 ```
 
 ##### Female visits as a function of being brought by Satellite male
 
 ```{r}
+fv.brought.by.sat <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ female_visit_by_sat, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fv.brought.by.sat') #saves it as an output
 
+summary(fv.brought.by.sat)
+plot(fv.brought.by.sat)
 ```
 
 ##### Female visits as a function of being brought by Satellite male and passed to Nesting male
 
 ```{r}
+fv.brought.by.sat.passed2nm <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ female_visits_by_sat_passed_to_nm, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fv.brought.by.sat.passed2nm') #saves it as an output
 
+summary(fv.brought.by.sat.passed2nm)
+plot(fv.brought.by.sat.passed2nm)
 ```
 
 ##### Female visits as a function of being brought by a sneaker male
 
 ```{r}
+fv.brought.by.snkr <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ female_visit_by_snk, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fv.brought.by.snkr') #saves it as an output
 
+summary(fv.brought.by.snkr)
+plot(fv.brought.by.snkr)
 ```
