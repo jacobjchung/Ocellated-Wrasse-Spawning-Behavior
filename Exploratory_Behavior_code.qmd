@@ -672,13 +672,31 @@ This will add up the positive interactions occurring between the Satellite and N
 ##### Female visits as a function of Positive interactions between Nesting and Satellite Males
 
 ```{r}
+fv.pos.nmsat <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ female_visits_by_sat_passed_to_nm , #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fv.pos.nmsat') #saves it as an output
 
+summary(fv.pos.nmsat)
+plot(fv.pos.nmsat)
 ```
 
 ##### Female spawns as a function of Positive interactions between Nesting and Satellite Males
 
 ```{r}
+fs.pos.nmsat <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_spawns ~ total_spawns_sat_passed_to_nm, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fs.pos.nmsat') #saves it as an output
 
+summary(fs.pos.nmsat)
+plot(fs.pos.nmsat)
 ```
 
 #### Negative interactions between Satellite and Nesting Male and Female Visits and Spawn
