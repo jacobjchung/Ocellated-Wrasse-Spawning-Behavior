@@ -736,13 +736,31 @@ Female prefer to not spawn with sneakers, thus higher Satellite and Nesting male
 ##### Female visits as a function of Nesting male courtship
 
 ```{r}
+fv.nm.court <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_visits ~ nm_courtship, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fv.nm.court') #saves it as an output
 
+summary(fv.nm.court)
+plot(fv.nm.court)
 ```
 
 ##### Female spawns as a function of Nesting male courtship
 
 ```{r}
+fs.nm.court <-
+  brm(data = behavior_sheet_cln, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_spawns ~ nm_courtship, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fs.nm.court') #saves it as an output
 
+summary(fs.nm.court)
+plot(fs.nm.court)
 ```
 
 #### Does it matter who brings the female?
