@@ -1,0 +1,106 @@
+---
+title: "Model.distributions.testing"
+format: pdf
+editor: visual
+---
+
+## Tidy
+
+```{r}
+#Install and library important packages
+#install.packages('ggplot2')
+#install.packages('ggeffects')
+#install.packages('RColorBrewer')
+#install.packages('here')
+#install.packages('MASS')
+#install.packages('tidyverse')
+#install.packages('janitor')
+#install.packages('readxl')
+#install.packages('brms')
+library(ggeffects)
+library(tidyverse)
+library(janitor)
+library(here)
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(brms)
+library(RColorBrewer)
+library(tibble)
+library(MASS)
+
+behavior_sheet <- read_excel("UW_Nest_Behavioral_Sheets_Cleaned.xlsx")
+
+behavior_sheet_date <- as.Date(behavior_sheet$Date)
+behavior_sheet$Date <- behavior_sheet_date
+behavior_sheet_sep <- behavior_sheet %>%
+  mutate(Year = year(Date)) %>%
+  mutate(Month = month(Date)) %>%
+  mutate(Day = day(Date)) %>%
+  relocate(Year, .after = Date) %>%
+  relocate(Month, .after = Year) %>%
+  relocate(Day, .after = Month)
+head(behavior_sheet_sep)
+
+#Fix SAT submission to NM from chr to num
+sat_sub <- as.numeric(behavior_sheet_sep$`SAT submission to NM`) #Creates a vector with the same entries but as numbers
+behavior_sheet_sep$`SAT submission to NM` <- sat_sub #put it back into the tibble
+#Do the same for SNK Submission to SAT
+snk_sub <- as.numeric(behavior_sheet_sep$`SNK submission to SAT`)
+behavior_sheet_sep$`SNK submission to SAT` <- snk_sub
+#Same for NM aggression to SAT
+NM_aggsat <- as.numeric(behavior_sheet_sep$`NM aggression to SAT`)
+behavior_sheet_sep$`NM aggression to SAT` <- NM_aggsat
+
+behavior_sheet_cln <- behavior_sheet_sep |>
+  #Uses the Janitor package to standardize the names
+  clean_names()
+
+#Turn the year variable into a character for ease of comparison later on
+year_date <- as.character(behavior_sheet_cln$year) #Creates a vector with years as chr
+behavior_sheet_cln$year <- year_date #creates a new variable for ease of graphing later on
+```
+
+## Total Females spawned as a function of total female visits
+
+## M1 Negative Binomial
+
+```{r}
+#Total Females spawned as a function of total female visits
+f.tfspawns.tvisits.nbmdl <- 
+      brm(data = behavior_sheet_cln, #Gives the model the tibble
+      family = negbinomial(), #Tells the model what distribution to use
+      total_female_spawning ~ total_female_visits, #specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Specifying Markov chain parameters
+      seed = 4, #Determines which random numbers will get sampled
+      file = 'Exploratory model outputs/f.tfspawns.tvisits.nbmdl') #Saves the model as an object for outputting later
+
+preds <- predict_response(f.tfspawns.tvisits.nbmdl)
+plot(preds, show_data = TRUE)
+
+pp_check(f.tfspawns.tvisits.nbmdl)
+
+summary(f.tfspawns.tvisits.nbmdl) #Gives us model summary
+plot(f.tfspawns.tvisits.nbmdl) #plots the Markov chains
+```
+
+## M2 Poisson
+
+```{r}
+#Total Females spawned as a function of total female visits
+f.tfspawns.tvisits.pmdl <- 
+      brm(data = behavior_sheet_cln, #Gives the model the tibble
+      family = poisson(), #Tells the model what distribution to use
+      total_female_spawning ~ total_female_visits, #specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Specifying Markov chain parameters
+      seed = 4, #Determines which random numbers will get sampled
+      file = 'Exploratory model outputs/f.tfspawns.tvisits.pmdl') #Saves the model as an object for outputting later
+
+preds <- predict_response(f.tfspawns.tvisits.pmdl)
+plot(preds, show_data = TRUE)
+
+pp_check(f.tfspawns.tvisits.pmdl)
+
+summary(f.tfspawns.tvisits.pmdl) #Gives us model summary
+plot(f.tfspawns.tvisits.pmdl) #plots the Markov chains
+```
