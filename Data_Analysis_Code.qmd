@@ -404,3 +404,9 @@ waic(fem.spawns.path.mdl.6)
 ```
 
 Based on the waic values, model 5 which is our model with the Nesting male bringing females and Satellite passing to Nesting male pathways is the best model given our data. This makes biological sense, the better a Nesting male and Satellite pair are the more likely a nest is going to be efficient, chasing sneakers and bringing females!
+
+## More Intricate Models
+
+While the previous model is interesting, it isn't quite telling us what we want to know. Our previous model was inferring that the total number of females spawning were best predicted by the females that spawned when the nesting male brought a female or when a Satellite passed the female to the nesting male. What we really want to know is if there is a difference in female spawning decision based on which 'pathway' she was introduced to the nest. Thus we need to make the model a little more complex.
+
+Goal: Given how a female visits, does it change the likelihood of spawning (in each pathway). Does that then correlate to overall nest success? Are there other influencing factors (number of sneakers, +/- nesting male and satellite male interactions?)
