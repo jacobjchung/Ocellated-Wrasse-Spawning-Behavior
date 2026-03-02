@@ -23,6 +23,8 @@ What is the relationship between number of sneakers at a nest and the propensity
 
 # Tidying code
 
+Here we are downloading and getting all the important libraries we will need for the code. Then we are going to download the raw data. Then we fix some of the columns so we can use them for analysis, especially the date column!
+
 ```{r}
 #Install and library important packages
 #install.packages('ggplot2')
@@ -383,6 +385,7 @@ fem.spawns.path.mdl.6 <- sheet.normalized.rmv |>
     iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
       seed = 4, #Determines which random numbers
       file = 'Data Analysis Outputs/fem.spawns.path.mdl.6') #saves it as an output
+
 
 #Gives a plot of the model's predictions
 pp_check(fem.spawns.path.mdl.6)

@@ -1,0 +1,14 @@
+---
+title: "readme"
+output: html_document
+---
+
+# What's in this folder?
+
+This folder includes all the scripts (most in Quarto Documents) and outputs, both model and graphs, that were used during the exploration part of this project.
+
+The DAGcode.qmd contains the code for the directed acyclic graph that was used while thinking about our project.
+
+The Exploratory_Behavior_code.qmd contains the code for the exploratory models and graphs we ran while thinking about our data.
+
+Model.distributions.testing.qmd is code that was used to look at different brms distribution families for our data.
