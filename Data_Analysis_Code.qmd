@@ -641,3 +641,80 @@ pathways.success.rate.total <- behavior_sheet_cln |>
   
 pathways.success.rate.total
 ```
+
+Let's visualize if certain pathways lead to females spawning more
+
+```{r}
+pathways.success.rate.total <- behavior_sheet_cln |>
+  #Remove nests where there are data inconsistencies
+  filter_out((female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm) > (total_spawns_nm_brought + total_spawns_nm_brought_sat_only_spawn)) |>
+  filter_out((female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn) > (total_spawns_sat_brought + total_spawns_sat_brought_sat_only_spawn)) |>
+  filter_out((female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn) > (total_spawns_sat_passed_to_nm + total_spawns_sat_passed_to_nm_but_sat_only_spawn))|>
+  filter_out((female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn) > (total_spawns_snk_brought + total_spawns_snk_brought_snk_only_spawn))|>
+  #Create new variables that account for the pathway's proportion
+  mutate(
+    'Nesting Male' = sum(total_spawns_nm_brought + total_spawns_nm_brought_sat_only_spawn)/sum(female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm),
+    'Satellite Male' = sum(total_spawns_sat_brought + total_spawns_sat_brought_sat_only_spawn)/sum(female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn),
+    'Satellite Pass' = sum(total_spawns_sat_passed_to_nm + total_spawns_sat_passed_to_nm_but_sat_only_spawn)/sum(female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn),
+    'Sneaker Male' = sum(total_spawns_snk_brought + total_spawns_snk_brought_snk_only_spawn)/sum(female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)
+  ) |>
+  #Make the tibble only include these variables
+  dplyr::select(`Nesting Male`:`Sneaker Male`) |>
+  #Remove all the duplicates
+  distinct() |>
+  #Adjust the table to make the variables go into one coloumn
+  pivot_longer(`Nesting Male`:`Sneaker Male`,
+               names_to = 'Pathway',
+               values_to = 'Success Rate') |>
+  #Graph it
+  ggplot(aes(Pathway, `Success Rate`, fill = Pathway)) +
+  #Makes the graph a bar graph
+  geom_col() +
+  labs(x = 'Pathway', 
+       y = 'Times Mated',
+       title = "The Number of times each Female spawned for each Visitation Pathway",) + #edits axis and title labels
+  theme_classic() + #Sets the plot visuals
+  #Adds a color scheme to the plot
+  scale_fill_manual(values = c('Nesting Male' = '#065143', 'Satellite Male' = '#db5a42', 'Satellite Pass' = '#7A9B76','Sneaker Male' = '#1481BA')) +
+  theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
+  theme(legend.position = "none") # Removes all legends
+  
+pathways.success.rate.total
+```
+
+Now let's run some models
+
+We'll run the Nesting Male and Satellite pass to Nesting Male pathways first since it seemed the best fit before.
+
+```{r}
+path.visits.norm <- behavior_sheet_cln |>
+  #Normalize the different pathways by the total number of females that visited
+  mutate(
+    'nm.path' = (female_visits_by_nm)/(total_female_visits),
+    'sat.path' = (female_visit_by_sat)/(total_female_visits),
+    'sat.pass.path' = (female_visits_by_sat_passed_to_nm)/(total_female_visits),
+    'snk.path' = (female_visit_by_snk)/(total_female_visits)
+  )
+
+path.visits.norm.rmv <- path.visits.norm |>
+  #Removing rows where there were data mistakes
+  filter(!(total_female_spawning > total_female_visits))
+
+
+path.fem.spawning <- path.visits.norm.rmv |>
+  brm(data = path.visits.norm.rmv,
+    family = binomial(link = 'logit'), #Tell model what type of distribution
+    #Specifying the model
+    formula = bf(total_female_spawning | trials(total_female_visits) ~ 1 + nm.path + sat.pass.path),
+    prior = c(prior(normal(0, 2), class = Intercept)),
+    iter = 4000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Data Analysis Outputs/path.fem.spawning') #saves it as an output
+
+#Gives a plot of the model's predictions
+pp_check(path.fem.spawning)
+#Gives us the summary of the model
+print(path.fem.spawning, digits = 4)
+#Plots the Markov chains
+plot(path.fem.spawning)
+```
