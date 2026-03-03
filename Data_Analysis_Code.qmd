@@ -514,8 +514,43 @@ waic(fem.spawns.path.mdl.6)
 
 Based on the waic values, model 5 which is our model with the Nesting male bringing females and Satellite passing to Nesting male pathways is the best model given our data. This makes biological sense, the better a Nesting male and Satellite pair are the more likely a nest is going to be efficient, chasing sneakers and bringing females!
 
-## More Intricate Models
+## More Aligned Models
 
 While the previous model is interesting, it isn't quite telling us what we want to know. Our previous model was inferring that the total number of females spawning were best predicted by the females that spawned when the nesting male brought a female or when a Satellite passed the female to the nesting male. What we really want to know is if there is a difference in female spawning decision based on which 'pathway' she was introduced to the nest. Thus we need to make the model a little more complex.
 
 Goal: Given how a female visits, does it change the likelihood of spawning (in each pathway). Does that then correlate to overall nest success? Are there other influencing factors (number of sneakers, +/- nesting male and satellite male interactions?)
+
+Let's visualize the pathways.
+
+```{r}
+pathways <- behavior_sheet_cln |>
+  #Create new variables that account for the pathway's proportion
+  mutate(
+    'Nesting Male Path' = sum(female_visits_by_nm)/sum(total_female_visits),
+    'Satellite Male Path' = sum(female_visit_by_sat)/sum(total_female_visits),
+    'Satellite Pass Path' = sum(female_visits_by_sat_passed_to_nm)/sum(total_female_visits),
+    'Sneaker Male Path' = sum(female_visit_by_snk)/sum(total_female_visits)
+  ) |>
+  #Make the tibble only include these variables
+  dplyr::select(`Nesting Male Path`:`Sneaker Male Path`) |>
+  #Remove all the duplicates
+  distinct() |>
+  #Adjust the table to make the variables go into one coloumn
+  pivot_longer(`Nesting Male Path`:`Sneaker Male Path`,
+               names_to = 'Pathway',
+               values_to = 'Proportion') |>
+  #Graph it
+  ggplot(aes(Pathway, Proportion, fill = Pathway)) +
+  #Makes the graph a bar graph
+  geom_col() +
+  labs(x = 'Pathway', 
+       y = 'Proportion of total Visits',
+       title = "The Propotion of each Visitation Pathway for Females",) + #edits axis and title labels
+  theme_classic() + #Sets the plot visuals
+  scale_fill_manual(values = c('Nesting Male Path' = '#065143', 'Satellite Male Path' = '#db5a42', 'Satellite Pass Path' = '#7A9B76','Sneaker Male Path' = '#1481BA')) +
+  theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
+  theme(legend.position = "none") # Removes all legends
+
+  
+pathways
+```
