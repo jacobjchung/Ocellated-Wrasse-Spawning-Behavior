@@ -949,3 +949,27 @@ Normalize the variables that we think are important, "female_spawns_by_nm, femal
 ```
 
 ## More Intricate model testing
+
+We want to create a model that allows us to look at the differing 'pathways' in which the female can visit a nest.
+
+let's visualize this.
+
+```{r eval= F}
+
+pathways <- behavior_sheet_cln |>
+  mutate(
+    'avg_nm_brings' = sum(female_visits_by_nm)/length(female_visits_by_nm),
+    'avg_sat_brings' = sum(female_visit_by_sat)/length(female_visit_by_sat),
+    'avg_sat_pass_nm_brings' = sum(female_visits_by_sat_passed_to_nm)/length(female_visits_by_sat_passed_to_nm),
+    'avg_snk_brings' = sum(female_visit_by_snk)/length(female_visit_by_snk)
+  ) |>
+  dplyr::select(avg_nm_brings:avg_snk_brings) |>
+  pivot_longer(cols = (avg_nm_brings:avg_snk_brings),
+               names_to = 'Type',
+               values_to = 'Count') |>
+  distinct() |>
+  ggplot(aes(x=Type, y = Count)) +
+  geom_column()
+
+pathways
+```
