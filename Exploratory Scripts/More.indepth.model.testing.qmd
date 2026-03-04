@@ -1,0 +1,182 @@
+---
+title: "More.indepth.model.testing"
+format: pdf
+editor: visual
+---
+
+## Run these before running models
+
+```{r}
+#Install and library important packages
+#install.packages('ggplot2')
+#install.packages('ggeffects')
+#install.packages('RColorBrewer')
+#install.packages('here')
+#install.packages('MASS')
+#install.packages('tidyverse')
+#install.packages('janitor')
+#install.packages('readxl')
+#install.packages('brms')
+#install.packages('ProbBayes')
+library(ProbBayes)
+library(ggeffects)
+library(tidyverse)
+library(janitor)
+library(here)
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(brms)
+library(RColorBrewer)
+library(tibble)
+library(MASS)
+
+behavior_sheet <- read_excel("UW_Nest_Behavioral_Sheets_Cleaned.xlsx")
+
+behavior_sheet_date <- as.Date(behavior_sheet$Date)
+behavior_sheet$Date <- behavior_sheet_date
+behavior_sheet_sep <- behavior_sheet %>%
+  mutate(Year = year(Date)) %>%
+  mutate(Month = month(Date)) %>%
+  mutate(Day = day(Date)) %>%
+  relocate(Year, .after = Date) %>%
+  relocate(Month, .after = Year) %>%
+  relocate(Day, .after = Month)
+head(behavior_sheet_sep)
+
+#Fix SAT submission to NM from chr to num
+sat_sub <- as.numeric(behavior_sheet_sep$`SAT submission to NM`) #Creates a vector with the same entries but as numbers
+behavior_sheet_sep$`SAT submission to NM` <- sat_sub #put it back into the tibble
+#Do the same for SNK Submission to SAT
+snk_sub <- as.numeric(behavior_sheet_sep$`SNK submission to SAT`)
+behavior_sheet_sep$`SNK submission to SAT` <- snk_sub
+#Same for NM aggression to SAT
+NM_aggsat <- as.numeric(behavior_sheet_sep$`NM aggression to SAT`)
+behavior_sheet_sep$`NM aggression to SAT` <- NM_aggsat
+
+behavior_sheet_cln <- behavior_sheet_sep |>
+  #Uses the Janitor package to standardize the names
+  clean_names()
+
+#Turn the year variable into a character for ease of comparison later on
+year_date <- as.character(behavior_sheet_cln$year) #Creates a vector with years as chr
+behavior_sheet_cln$year <- year_date #creates a new variable for ease of graphing later on
+```
+
+```{r}
+pathway.visits.modl <- behavior_sheet_cln |>
+  #Remove nests where there are data inconsistencies
+  filter_out((female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm)/(total_female_spawning) > 1 ) |>
+  filter_out((female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn)/(total_female_spawning) > 1) |>
+  filter_out((female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn)/(female_visits_by_sat_passed_to_nm) > 1) |>
+  filter_out((female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)/(total_female_spawning) > 1)|>
+  #Create new variables that account for the pathway's proportion
+  mutate(
+    'Nesting Male' = (female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm),
+    'Satellite Male' = (female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn),
+    'Satellite Male Pass' = (female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn),
+    'Sneaker Male' = (female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)
+  ) |>
+  #Move the pathways columns we just created into their own column for inputting into the model
+  pivot_longer(cols = c(`Nesting Male`:`Sneaker Male`),
+               names_to = 'Pathway',
+               values_to = 'number.spawned')
+```
+
+## Model testing
+
+```{r}
+pathway.spawns.mdl.no.nest <- pathway.visits.modl |>
+  brm(
+    family = binomial(link = 'logit'), #Tell model what type of distribution
+    #Specifying the model
+    formula = bf(number.spawned | trials(total_female_visits) ~ 0 + Pathway),
+    prior = c(prior(normal(0, 2), class = b)),
+    iter = 4000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/pathway.spawns.mdl.no.nest') #saves it as an output
+
+#Gives a plot of the model's predictions
+pp_check(pathway.spawns.mdl.no.nest)
+#Gives us the summary of the model
+print(pathway.spawns.mdl.no.nest, digits = 4)
+#Plots the Markov chains
+plot(pathway.spawns.mdl.no.nest)
+```
+
+Let's back transform our summary
+
+HOW
+
+Now with nest as a random effect
+
+```{r}
+pathway.spawns.mdl.nest <- pathway.visits.modl |>
+  brm(
+    family = binomial(link = 'logit'), #Tell model what type of distribution
+    #Specifying the model
+    formula = bf(number.spawned | trials(total_female_visits) ~ 0 + Pathway + (1|nest_name)),
+    prior = c(prior(normal(0, 2), class = b)),
+    iter = 4000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/pathway.spawns.mdl.nest') #saves it as an output
+
+#Gives a plot of the model's predictions
+pp_check(pathway.spawns.mdl.nest)
+#Gives us the summary of the model
+print(pathway.spawns.mdl.nest, digits = 4)
+#Plots the Markov chains
+plot(pathway.spawns.mdl.nest)
+```
+
+```{r}
+loo(pathway.spawns.mdl.no.nest)
+loo(pathway.spawns.mdl.nest)
+waic(pathway.spawns.mdl.no.nest)
+waic(pathway.spawns.mdl.nest)
+```
+
+## Trying negative binomial
+
+```{r}
+pathway.spawns.nbmdl.nest <- pathway.visits.modl |>
+  brm(
+    family = negbinomial(link = 'log'), #Tell model what type of distribution
+    #Specifying the model
+    formula = number.spawned ~ 0 + Pathway + (1|nest_name),
+    prior = c(prior(normal(0, 2), class = b)),
+    iter = 4000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/pathway.spawns.nbmdl.nest') #saves it as an output
+
+#Gives a plot of the model's predictions
+pp_check(pathway.spawns.nbmdl.nest)
+#Gives us the summary of the model
+print(pathway.spawns.nbmdl.nest, digits = 4)
+#Plots the Markov chains
+plot(pathway.spawns.nbmdl.nest)
+```
+
+```{r}
+pathway.spawns.nbmdl.nonest <- pathway.visits.modl |>
+  brm(
+    family = negbinomial(link = 'log'), #Tell model what type of distribution
+    #Specifying the model
+    formula = number.spawned ~ 0 + Pathway,
+    prior = c(prior(normal(0, 2), class = b)),
+    iter = 4000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/pathway.spawns.nbmdl.nonest') #saves it as an output
+
+#Gives a plot of the model's predictions
+pp_check(pathway.spawns.nbmdl.nonest)
+#Gives us the summary of the model
+print(pathway.spawns.nbmdl.nonest, digits = 4)
+#Plots the Markov chains
+plot(pathway.spawns.nbmdl.nonest)
+```
+
+```{r}
+loo(pathway.spawns.nbmdl.nest)
+loo(pathway.spawns.nbmdl.nonest)
+```
