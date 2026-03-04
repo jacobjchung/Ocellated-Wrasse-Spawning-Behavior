@@ -44,3 +44,46 @@ The multiple male reproductive tactics and large amounts of mate choice copying 
 
 ## References
 Rosenthal, G . (2017). Mate Choice: The Evolution of Sexual Decision Making from Microbes to Humans. Princeton Univ.  Press, Princeton, NJ, 648 pp. ISBN:  978-0-691-15067-3
+
+## R session info
+R version 4.5.2 (2025-10-31)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sonoma 14.6.1
+
+Matrix products: default
+BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: America/Los_Angeles
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] MASS_7.3-65        RColorBrewer_1.1-3 brms_2.23.0        Rcpp_1.1.1         readxl_1.4.5      
+ [6] here_1.0.2         janitor_2.2.1      lubridate_1.9.4    forcats_1.0.1      stringr_1.6.0     
+[11] dplyr_1.2.0        purrr_1.2.1        readr_2.1.6        tidyr_1.3.2        tibble_3.3.1      
+[16] tidyverse_2.0.0    ggeffects_2.3.2    ProbBayes_1.1      shiny_1.12.1       gridExtra_2.3     
+[21] ggplot2_4.0.2      LearnBayes_2.15.2 
+
+loaded via a namespace (and not attached):
+ [1] tensorA_0.36.2.1      gtable_0.3.6          xfun_0.56             insight_1.4.6        
+ [5] lattice_0.22-7        tzdb_0.5.0            vctrs_0.7.1           tools_4.5.2          
+ [9] generics_0.1.4        parallel_4.5.2        pkgconfig_2.0.3       Matrix_1.7-4         
+[13] checkmate_2.3.4       S7_0.2.1              RcppParallel_5.1.11-1 distributional_0.6.0 
+[17] lifecycle_1.0.5       compiler_4.5.2        farver_2.1.2          Brobdingnag_1.2-9    
+[21] snakecase_0.11.1      httpuv_1.6.16         htmltools_0.5.9       bayesplot_1.15.0     
+[25] later_1.4.5           pillar_1.11.1         bridgesampling_1.2-1  abind_1.4-8          
+[29] nlme_3.1-168          mime_0.13             posterior_1.6.1       tidyselect_1.2.1     
+[33] digest_0.6.39         mvtnorm_1.3-3         stringi_1.8.7         splines_4.5.2        
+[37] rprojroot_2.1.1       fastmap_1.2.0         grid_4.5.2            cli_3.6.5            
+[41] magrittr_2.0.4        loo_2.9.0             survival_3.8-3        withr_3.0.2          
+[45] backports_1.5.0       scales_1.4.0          promises_1.5.0        timechange_0.4.0     
+[49] matrixStats_1.5.0     otel_0.2.0            cellranger_1.1.0      hms_1.1.4            
+[53] coda_0.19-4.1         evaluate_1.0.5        knitr_1.51            rstantools_2.6.0     
+[57] rlang_1.1.7           xtable_1.8-4          glue_1.8.0            rstudioapi_0.18.0    
+[61] R6_2.6.1   
