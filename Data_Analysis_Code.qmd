@@ -19,7 +19,7 @@ Does nesting male courtship behavior increase the propensity for a female to vis
 
 How does nesting male aggression influence female visits and spawning?
 
-# Tidying code
+# Tidying code/Wrangling
 
 Here we are downloading and getting all the important libraries we will need for the code. Then we are going to download the raw data. Then we fix some of the columns so we can use them for analysis, especially the date column!
 
