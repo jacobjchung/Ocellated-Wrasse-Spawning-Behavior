@@ -19,6 +19,10 @@ Does nesting male courtship behavior increase the propensity for a female to vis
 
 How does nesting male aggression influence female visits and spawning?
 
+### This document
+
+The purpose of this document is to catch you up o the progress of our research on mate choice! It will help you visualize what we've been doing and what we've found! Please ask questions, there are no wrong questions we are all learning together!
+
 # Tidying code/Wrangling
 
 Here we are downloading and getting all the important libraries we will need for the code. Then we are going to download the raw data. Then we fix some of the columns so we can use them for analysis, especially the date column!
@@ -742,7 +746,7 @@ pathway.spawns.modl <- behavior_sheet_cln |>
                values_to = 'number.spawned')
 ```
 
-Then we create the model, this is using the spawning as the
+Then we create the model that uses total spawns at a nest as the number of trials
 
 ```{r}
 pathway.spawns.mdl.1 <- pathway.spawns.modl |>
@@ -797,6 +801,7 @@ pathway.spawns.mdl.nest <- pathway.visits.modl |>
     prior = c(prior(normal(0, 2), class = b)),
     iter = 4000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
       seed = 4, #Determines which random numbers
+    sample_prior = 'yes', #Allows us to run hypothesis tests of the different Pathways
       file = 'Data Analysis Outputs/pathway.spawns.mdl.nest') #saves it as an output
 
 #Gives a plot of the model's predictions
@@ -805,7 +810,13 @@ pp_check(pathway.spawns.mdl.nest)
 print(pathway.spawns.mdl.nest, digits = 4)
 #Plots the Markov chains
 plot(pathway.spawns.mdl.nest)
+
+#This is how we are going to check if the Satellite pathways are statistically significantly different
+sat.vs.satpath <- hypothesis(pathway.spawns.mdl.nest, 'PathwaySatellite Male = PathwaySatellite Male Pass', alpha = 0.05)
+plot(sat.vs.satpath)
 ```
+
+This hypothesis test tells us that the two satellite male pathways are not statistically significantly different from one another.
 
 Now lets back-transform our data
 
@@ -815,9 +826,23 @@ back.transformed <- data.frame('Estimate' = c(plogis(-0.7551),plogis(-3.8650), p
 back.transformed.summary <- back.transformed |>
   mutate('l-95% CI' = c(plogis(-0.9013), plogis(-4.1906), plogis(-3.9848), plogis(-7.3479))) |>
   mutate('u-95% CI' = c(plogis(-0.6128), plogis(-3.5607), plogis(-3.3964), plogis(-5.4461)))
+back.transformed.summary
+
 ```
 
-(INSERT ANALYSIS)
+So based on our models it seems like there is an effect on spawning for each of the pathways (albeit practically non-existent in some). Given our data it seems that for:
+
+The probability of a female spawning when brought by the nesting male is around 31.9%
+
+The probability of a female spawning when brought by the satellite male is around 2.05%
+
+The probability of a female spawning when brought by the satellite male then passed to the nesting male is around 2.46%
+
+The probability of a female spawning when brought by the sneaker male is 0.1%.
+
+Since none of our 95% confidence intervals overlap with zero, we can assume that these effects are different from zero (again based on our data).
+
+Thinking about this, it makes sense. As we saw in the graphs, the majority of female visits are by the nesting male, thus it would have a higher probability than the other pathways. It is interesting that the satellite male pathways are so low, however, the pathway when the satellite male passes the female to the nesting male being higher than when it's just the satellite male is super interesting, and is going to be something we're going to continue to look at. Overall, these visualizations and models help give us a foundation for what we're interested in!
 
 \
 This next chunk is the graph of our model's predictions
@@ -839,6 +864,10 @@ plot(ggpredict(pathway.spawns.mdl.nest, # Tells the data
 ```
 
 This tells us some interesting information. Given 10 random trials, we would expected around 3 females to spawn when brought by the Nesting Male, zero for Sneaker males, and almost zero for the other types, this prediction makes sense. Since these pathways are counting when the Nesting Male and Satellite Male are openly spawning, but not all the sneak spawns from sneaker and satellites.
+
+# Final notes
+
+You are now caught up with our where our research stands! While our findings thus far can seem "disappointing" or "lack-luster" that is actually good! Nature is so complex, let alone animal behavior, thus any findings provide useful information! For our research, these models indicate that we need to adjust how we collect our behavior data. So far, we've only been working on total spawns of each pathway and not looking at how/what influences individual females (because this is going to be a lot of work, that's where you come in!). Additionally, while it is small, and not statistically significant, the difference between the satellite male and the satellite male pass pathway is promising! Maybe, with some adjustment to how we are quantifying our data, we can test if the different pathways matter. Which would be very interesting because that means the females are paying attention to the social context around them!
 
 # Session info
 

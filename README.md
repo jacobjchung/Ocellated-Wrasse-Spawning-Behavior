@@ -42,6 +42,13 @@ Reference: Alonzo, S. H. (2008). Female mate choice copying affects sexual selec
 
 The multiple male reproductive tactics and large amounts of mate choice copying in *S. ocellatus*, provide researchers the opportunity to observe the influencing effects of the social environment on chooser decision making!
 
+## What is where?
+Here are the main files that are going to be useful for you to understand our research:
+Data_Analysis_Code.qmd is our markdown that is explaining the tests we ran that have directed our research.
+In the Exploratory Scripts folder, Exploratory_Behavior_code.qmd holds all of our visualizations and models we ran while exploring the data, check it out! We might've already graphed a question you might have.
+DAGCode.qmd contains some of the directed acyclic graphs we created for our system (this is still a work in progress!).
+More.indepth.model.testing.qmd contains some further generalized linear mixed models that we have tried whille exploring our data.
+
 ## References
 Rosenthal, G . (2017). Mate Choice: The Evolution of Sexual Decision Making from Microbes to Humans. Princeton Univ.  Press, Princeton, NJ, 648 pp. ISBN:  978-0-691-15067-3
 
