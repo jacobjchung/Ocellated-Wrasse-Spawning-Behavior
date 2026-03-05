@@ -185,7 +185,7 @@ fem.v.nmcourt <- behavior_sheet_cln |>
   geom_point() + #scatterplot
   geom_smooth(method ='glm.nb', se = F, color = 'darkgreen') + #Plots a Negative Binomial model onto the data
   theme_classic()+
-  labs(x = 'How many times nesting male displayed courtship behavior (count)', y = 'Females that visited (count)', title = 'How many females visited as a function of nesting male courtship events') #Sets axis and title
+  labs(x = 'How many times nesting male displayed courtship behavior (count)', y = 'Females that visited (count)', title = 'How many females visited as a function of nesting male courtship events', color = 'Avg # sneakers') #Sets axis and title
 
 plot(fem.v.nmcourt)
 
@@ -199,14 +199,14 @@ fem.s.nmcourt <- behavior_sheet_cln |>
   geom_point() + #scatterplot
   geom_smooth(method ='glm.nb', se = F, color = 'darkgreen') + #Plots a Negative Binomial model onto the data
   theme_classic()+
-  labs(x = 'How many times nesting male displayed courtship behavior (count)', y = 'Females that visited (count)', title = 'How many females visited as a function of nesting male courtship events') #Sets axis and title
+  labs(x = 'How many times nesting male displayed courtship behavior (count)', y = 'Females that visited (count)', title = 'How many females visited as a function of nesting male courtship events', color = 'Avg # sneakers') #Sets axis and title
 
 plot(fem.s.nmcourt)
 ```
 
 ## Female visits/spawning as a function of nesting male aggression
 
-## Female visits as a function of nesting male aggression
+### Female visits as a function of nesting male aggression
 
 ```{r}
 fvisits.nmagg <- behavior_sheet_cln |>
@@ -216,16 +216,16 @@ fvisits.nmagg <- behavior_sheet_cln |>
   ggplot(aes(total_nm_agg, total_female_visits)) + #gives ggplot dimensions
   geom_point() + #makes the plot a scatterplot
   geom_smooth() + #adds a trendline for the plot
-  labs(x = 'Total Nesting Male Aggression Behaviors',
-       y = 'Total Female Visits',
-       title = 'Total Visits as Function of Total Nesting Male Aggression') + #Makes labels
+  labs(x = 'Total nesting male aggression behaviors',
+       y = 'Total female visits',
+       title = 'How many females visited as a function of nesting male aggression') + #Makes labels
   theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
 
 fvisits.nmagg
 ```
 
-## Female spawning as a function of nesting male aggression
+### Female spawning as a function of nesting male aggression
 
 ```{r}
 f.spawns.nmagg <- behavior_sheet_cln |>
@@ -235,9 +235,9 @@ f.spawns.nmagg <- behavior_sheet_cln |>
   ggplot(aes(total_nm_agg, total_female_spawning)) + #gives ggplot dimensions
   geom_point() + #makes the plot a scatterplot
   geom_smooth() + #adds a trendline for the plot
-  labs(x = 'Total Nesting Male Aggression Behaviors',
-       y = 'Total Female Spawns',
-       title = 'Total Spawns as Function of Total Nesting Male Aggression') + #Makes labels
+  labs(x = 'Total nesting male aggression behaviors',
+       y = 'Total female spawns',
+       title = 'How many female spawns as a function of nesting male aggression') + #Makes labels
   theme_classic() + #Sets the plot visuals
   theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
 
@@ -261,7 +261,7 @@ fv.nm.court <-
       seed = 4, #Determines which random numbers
       file = 'Data Analysis Outputs/fv.nm.court') #saves it as an output
 
-summary(fv.nm.court)
+print(fv.nm.court, digits=4)
 plot(fv.nm.court)
 ```
 
@@ -276,7 +276,7 @@ fs.nm.court <-
       seed = 4, #Determines which random numbers
       file = 'Data Analysis Outputs/fs.nm.court') #saves it as an output
 
-summary(fs.nm.court)
+print(fs.nm.court, digits=4)
 plot(fs.nm.court)
 ```
 
