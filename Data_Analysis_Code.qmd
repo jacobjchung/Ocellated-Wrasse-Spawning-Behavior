@@ -789,7 +789,7 @@ pathway.visits.modl <- behavior_sheet_cln |>
 Model
 
 ```{r}
-pathway.spawns.mdl.2 <- pathway.visits.modl |>
+pathway.spawns.mdl.nest <- pathway.visits.modl |>
   brm(
     family = binomial(link = 'logit'), #Tell model what type of distribution
     #Specifying the model
@@ -797,18 +797,54 @@ pathway.spawns.mdl.2 <- pathway.visits.modl |>
     prior = c(prior(normal(0, 2), class = b)),
     iter = 4000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
       seed = 4, #Determines which random numbers
-      file = 'Data Analysis Outputs/pathway.spawns.mdl.2') #saves it as an output
+      file = 'Data Analysis Outputs/pathway.spawns.mdl.nest') #saves it as an output
 
 #Gives a plot of the model's predictions
-pp_check(pathway.spawns.mdl.2)
+pp_check(pathway.spawns.mdl.nest)
 #Gives us the summary of the model
-print(pathway.spawns.mdl.2, digits = 4)
+print(pathway.spawns.mdl.nest, digits = 4)
 #Plots the Markov chains
-plot(pathway.spawns.mdl.2)
+plot(pathway.spawns.mdl.nest)
 ```
+
+Now lets back-transform our data
+
+```{r}
+back.transformed <- data.frame('Estimate' = c(plogis(-0.7551),plogis(-3.8650), plogis(-3.6807), plogis(-6.2933)), row.names = c("Nesting Male", 'Satellite Male', "Satellite Male Pass", 'Sneaker Male'))
+
+back.transformed.summary <- back.transformed |>
+  mutate('l-95% CI' = c(plogis(-0.9013), plogis(-4.1906), plogis(-3.9848), plogis(-7.3479))) |>
+  mutate('u-95% CI' = c(plogis(-0.6128), plogis(-3.5607), plogis(-3.3964), plogis(-5.4461)))
+```
+
+(INSERT ANALYSIS)
+
+\
+This next chunk is the graph of our model's predictions
+
+```{r}
+#Create the predictions
+preds <- predict_response(pathway.spawns.mdl.nest, terms = c('Pathway'))
+#Plots the prediction
+plot(ggpredict(pathway.spawns.mdl.nest, # Tells the data
+               c("Pathway"), #Which term is on the x-axis
+               type = "fixed", #it is fixed
+               condition = c(total_female_visits = 10) #How many "trials to show"
+     )) + 
+  theme(legend.position = "none") + #Removes any legend
+  theme_classic() + # Sets the overall theme
+  labs(y = 'Number of females that spawned',
+       title = 'Predicted Successes of Number of Females that spawned') + #Adjust axis and title
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
+```
+
+This tells us some interesting information. Given 10 random trials, we would expected around 3 females to spawn when brought by the Nesting Male, zero for Sneaker males, and almost zero for the other types, this prediction makes sense. Since these pathways are counting when the Nesting Male and Satellite Male are openly spawning, but not all the sneak spawns from sneaker and satellites.
 
 # Session info
 
+Here is the session info!
+
 ```{r}
-sessionInfo()
+sess <- sessionInfo()
+sess
 ```

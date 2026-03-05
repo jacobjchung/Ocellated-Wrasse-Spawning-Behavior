@@ -132,8 +132,24 @@ plot(pathway.spawns.mdl.nest)
 ```{r}
 loo(pathway.spawns.mdl.no.nest)
 loo(pathway.spawns.mdl.nest)
-waic(pathway.spawns.mdl.no.nest)
-waic(pathway.spawns.mdl.nest)
+```
+
+This next chunk is the graph of our models predictions
+
+```{r}
+#Create the predictions
+preds <- predict_response(pathway.spawns.mdl.nest, terms = c('Pathway'))
+#Plots the prediction
+plot(ggpredict(pathway.spawns.mdl.nest, # Tells the data
+               c("Pathway"), #Which term is on the x-axis
+               type = "fixed", #it is fixed
+               condition = c(total_female_visits = 10) #How many "trials to show"
+     )) + 
+  theme(legend.position = "none") + #Removes any legend
+  theme_classic() + # Sets the overall theme
+  labs(y = 'Number of females that spawned',
+       title = 'Predicted Successes of Number of Females that spawned') + #Adjust axis and title
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
 ```
 
 ## Trying negative binomial
