@@ -1,8 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
 
 # Female Mate Choice and Spawning Behavior of the Ocellated wrasse.
 
