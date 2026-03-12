@@ -10,7 +10,7 @@ The goal of this quarto document is to delve deeper into the female visitation "
 \
 ![](images/pathways.spawn.success.png)\
 
-![](images/pathways.total.spawns.png)\
+![](images/pathways.total.spawns.png){width="698"}\
 The code for these graphs is located in Data_Analysis_Code.qmd. These graphs are interesting because not much research has been done on understanding female mate choice, especially in the wrasse. Thus these graphs give us potential insight into the complexity (possibly) of female decision making.
 
 ## Code Wrangling
@@ -42,8 +42,10 @@ library(RColorBrewer)
 library(tibble)
 library(MASS)
 
+#Download the Data
 behavior_sheet <- read_excel("UW_Nest_Behavioral_Sheets_Cleaned.xlsx")
 
+#Separate the data into something more digestable
 behavior_sheet_date <- as.Date(behavior_sheet$Date)
 behavior_sheet$Date <- behavior_sheet_date
 behavior_sheet_sep <- behavior_sheet %>%
@@ -74,4 +76,93 @@ year_date <- as.character(behavior_sheet_cln$year) #Creates a vector with years 
 behavior_sheet_cln$year <- year_date #creates a new variable for ease of graphing later on
 ```
 
-Let's now start running some significant differences tests.
+Let's now create the variables that we are interested in.
+
+```{r}
+sig.pathway.dif <- behavior_sheet_cln |>
+    #Remove nests where there are data inconsistencies
+  filter_out((female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm)/(total_female_visits_nm_brought) > 1) |>
+  filter_out((female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn)/(female_visit_by_sat) > 1) |>
+  filter_out((female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn)/(female_visits_by_sat_passed_to_nm) > 1) |>
+  filter_out((female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)/(female_visit_by_snk) > 1)|>
+  #Create the success rate variable for each of the pathways
+  mutate(
+    'nm.fspawn.sucessrate' = (female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm)/(total_female_visits_nm_brought),
+    'sat.fspawn.sucessrate' = (female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn)/(female_visit_by_sat),
+    'satpass.fspawn.sucessrate' = (female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn)/(female_visits_by_sat_passed_to_nm),
+    'snk.spawn.sucessrate' = (female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)/(female_visit_by_snk)
+    ) |>
+  #Go through the columns we just made and swap NAs for 0, since zeros do matter for us
+  mutate(
+    across(c(nm.fspawn.sucessrate:snk.spawn.sucessrate), ~replace_na(.x,0))
+  ) |>
+   #Remove nests where there are data inconsistencies
+  filter_out((female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm) > (total_spawns_nm_brought + total_spawns_nm_brought_sat_only_spawn)) |>
+  filter_out((female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn) > (total_spawns_sat_brought + total_spawns_sat_brought_sat_only_spawn)) |>
+  filter_out((female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn) > (total_spawns_sat_passed_to_nm + total_spawns_sat_passed_to_nm_but_sat_only_spawn))|>
+  filter_out((female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn) > (total_spawns_snk_brought + total_spawns_snk_brought_snk_only_spawn))|>
+  #Create the number of times female spawned variable for each of the pathways
+  mutate(
+    'nm.tfspawn' = (total_spawns_nm_brought + total_spawns_nm_brought_sat_only_spawn)/(female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm),
+    'sat.tfspawn' = (total_spawns_sat_brought + total_spawns_sat_brought_sat_only_spawn)/(female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn),
+    'satpass.tfspawn' = (total_spawns_sat_passed_to_nm + total_spawns_sat_passed_to_nm_but_sat_only_spawn)/(female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn),
+    'snk.tfspawn' = (total_spawns_snk_brought + total_spawns_snk_brought_snk_only_spawn)/(female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)
+  ) |>
+    #Go through the columns we just made and swap NAs for 0, since zeros do matter for us
+  mutate(
+    across(c(nm.tfspawn:snk.tfspawn), ~replace_na(.x,0)))
+```
+
+Let's graph these to see if they make sense
+
+Spawning success as a function of total female visits when brought by the nesting male
+
+```{r}
+ggplot(sig.pathway.dif, aes(total_female_visits_nm_brought, nm.fspawn.sucessrate)) +
+  geom_point() + #Sets the type of graph
+  geom_smooth() + #Adds a trendline
+  theme_classic() + #Sets the plot visuals
+  labs(title = 'Spawning success when Nesting Male brings the female',
+        x = 'Number of females brought by NM',
+       y = 'Spawning success rate') + # Labels the axes
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
+```
+
+Spawning success as a function of total female visits when brought by the satellite
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(sig.pathway.dif, aes(female_visit_by_sat, sat.fspawn.sucessrate)) +
+  geom_point() + #Sets the type of graph
+  geom_smooth() + #Adds a trendline
+  theme_classic() + #Sets the plot visuals
+  labs(title = 'Spawning success when the Satellite Male brings the female',
+        x = 'Number of females brought by SAT',
+       y = 'Spawning success rate') + # Labels the axes
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
+```
+
+Spawning success as a function of total female visits when brought by the sat and passed to the nesting male
+
+```{r, warning=FALSE}
+ggplot(sig.pathway.dif, aes(female_visits_by_sat_passed_to_nm, satpass.fspawn.sucessrate)) +
+  geom_point() + #Sets the type of graph
+  geom_smooth() + #Adds a trendline
+  theme_classic() + #Sets the plot visuals
+  labs(title = 'Spawning success when Satellite Male passes the female',
+        x = 'Number of females brought by SAT then Passed',
+       y = 'Spawning success rate') + # Labels the axes
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
+```
+
+Spawning success as a function of total female visits when brought by a sneaker
+
+```{r}
+ggplot(sig.pathway.dif, aes(female_visit_by_snk, snk.spawn.sucessrate)) +
+  geom_point() + #Sets the type of graph
+  #geom_smooth( method = 'lm') + #Adds a trendline
+  theme_classic() + #Sets the plot visuals
+  labs(title = 'Spawning success when a Sneaker male brings a female',
+        x = 'Number of females brought by a Sneaker',
+       y = 'Spawning success rate') + # Labels the axes
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
+```
