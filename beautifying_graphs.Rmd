@@ -1,0 +1,248 @@
+---
+title: "Beautifying Graphs"
+output: html_document
+date: "2026-07-29"
+---
+Run the code that will allow for graph creation
+```{r}
+#Install and library important packages
+#install.packages('ggplot2')
+#install.packages('ggeffects')
+#install.packages('RColorBrewer')
+#install.packages('here')
+#install.packages('MASS')
+#install.packages('tidyverse')
+#install.packages('janitor')
+#install.packages('readxl')
+#install.packages('brms')
+library(ggeffects)
+library(tidyverse)
+library(janitor)
+library(here)
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(brms)
+library(RColorBrewer)
+library(tibble)
+library(MASS)
+
+behavior_sheet <- read_excel("UW_Nest_Behavioral_Sheets_Cleaned.xlsx")
+head(behavior_sheet)
+
+behavior_sheet_date <- as.Date(behavior_sheet$Date)
+behavior_sheet$Date <- behavior_sheet_date
+behavior_sheet_sep <- behavior_sheet %>%
+  mutate(Year = year(Date)) %>%
+  mutate(Month = month(Date)) %>%
+  mutate(Day = day(Date)) %>%
+  relocate(Year, .after = Date) %>%
+  relocate(Month, .after = Year) %>%
+  relocate(Day, .after = Month)
+head(behavior_sheet_sep)
+
+#Fix SAT submission to NM from chr to num
+sat_sub <- as.numeric(behavior_sheet_sep$`SAT submission to NM`) #Creates a vector with the same entries but as numbers
+behavior_sheet_sep$`SAT submission to NM` <- sat_sub #put it back into the tibble
+#Do the same for SNK Submission to SAT
+snk_sub <- as.numeric(behavior_sheet_sep$`SNK submission to SAT`)
+behavior_sheet_sep$`SNK submission to SAT` <- snk_sub
+#Same for NM aggression to SAT
+NM_aggsat <- as.numeric(behavior_sheet_sep$`NM aggression to SAT`)
+behavior_sheet_sep$`NM aggression to SAT` <- NM_aggsat
+
+behavior_sheet_cln <- behavior_sheet_sep |>
+  #Uses the Janitor package to standardize the names
+  clean_names()
+
+#Turn the year variable into a character for ease of comparison later on
+year_date <- as.character(behavior_sheet_cln$year) #Creates a vector with years as chr
+behavior_sheet_cln$year <- year_date #creates a new variable for ease of graphing later on
+
+yearly_totals <- behavior_sheet_sep |>
+  group_by(Year) |>
+  summarise(
+    # count the number of nests in each year
+    total_nests = n(),
+    # take the avg of the "Average SNK" column for each year and make new column
+    avg_SNKR = mean(`Average SNK`, na.rm = TRUE),
+          # include only numeric columns
+    across(where(is.numeric) &
+             # exclude Month, Day, and Average SNKR column
+             !c(Month, Day, `Average SNK`), 
+           # add up remaining totals per year for each column
+           ~ sum(.x, na.rm = TRUE)))
+
+yearly_totals
+
+#Turn the year variable into a character for ease of comparison later on
+year_date <- as.character(yearly_totals$Year) #Creates a vector with years as chr
+yearly_totals$Year_axis <- year_date #creates a new variable for ease of graphing later on
+
+head(yearly_totals) #Double Check
+```
+Show some graphs from Exploratory_Behavior_code
+```{r}
+T_female_visits <- yearly_totals |>
+  #creates a variable that is the average female visits per nest
+  mutate('visits_p_nest' = (`Total Female Visits`)/total_nests) |>
+  ggplot(aes(Year_axis, visits_p_nest, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
+  labs(x = 'Year', 
+      y = 'Female visits per nest',
+      title = "Average Female visits per nest between years",
+      fill = 'Year') +  #edits axis and title labels
+  theme_classic() + #Sets the plot visuals
+  theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
+  scale_fill_brewer(palette = "Dark2") #Colors the bars
+  
+
+T_female_visits
+```
+```{r}
+A_female_spawns <- yearly_totals |>
+  #Gets average total female spawns between the years
+  mutate('avg_fspawns_nest' = (`Total Female Spawning`)/total_nests) |>
+  ggplot(aes(Year_axis, avg_fspawns_nest, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
+  labs(x = 'Year', 
+      y = 'Number of Females spawn per nest',
+      title = "Average number of Female that spawn per nest between years",
+      fill = 'Year') +  #edits axis and title labels
+  theme_classic() + #Sets the plot visuals
+  theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
+  scale_fill_brewer(palette = "Dark2") #Colors the bars
+  
+A_female_spawns
+```
+```{r}
+T_total_spawns <- yearly_totals |>
+  #Creates the column of total spawns per nest
+  mutate('total_spawns_p_nest' = (`Total Spawns`)/total_nests) |>
+  #Creates the plot
+  ggplot(aes(Year_axis, total_spawns_p_nest, fill = Year_axis)) + #gives ggplot dimensions
+  geom_col() + #makes the plot a column chart
+  labs(x = 'Year', 
+      y = 'Total spawns per nest',
+      title = "Average Total spawns per nest between years",
+      fill = 'Year') +  #edits axis and title labels
+  theme_classic() + #Sets the plot visuals
+  theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
+  scale_fill_brewer(palette = "Dark2") #Colors the bars
+  
+
+T_total_spawns
+```
+```{r}
+pathways.visits <- behavior_sheet_cln |>
+    #Remove nests where there are data inconsistencies
+  filter_out(female_visits_by_nm > total_female_visits) |>
+  filter_out(female_visit_by_sat > total_female_visits) |>
+  filter_out(female_visits_by_sat_passed_to_nm > total_female_visits)|>
+  filter_out(female_visit_by_snk > total_female_visits)|>
+  #Create new variables that account for the pathway's proportion
+  mutate(
+    'Nesting Male' = sum(female_visits_by_nm)/sum(total_female_visits),
+    'Satellite Male' = sum(female_visit_by_sat)/sum(total_female_visits),
+    'Satellite Male Passes' = sum(female_visits_by_sat_passed_to_nm)/sum(total_female_visits),
+    'Sneaker Male' = sum(female_visit_by_snk)/sum(total_female_visits)
+  ) |>
+  #Make the tibble only include these variables
+  dplyr::select(`Nesting Male`:`Sneaker Male`) |>
+  #Remove all the duplicates
+  distinct() |>
+  #Adjust the table to make the variables go into one coloumn
+  pivot_longer(`Nesting Male`:`Sneaker Male`,
+               names_to = 'Pathway',
+               values_to = 'Proportion') |>
+  #Graph it
+  ggplot(aes(Pathway, Proportion, fill = Pathway)) +
+  #Makes the graph a bar graph
+  geom_col() +
+  labs(x = 'Pathway', 
+       y = 'Proportion of total Visits',
+       title = "The Propotion of each Visitation Pathway for Female Visits",) + #edits axis and title labels
+  theme_classic() + #Sets the plot visuals
+  #Adds a color scheme to the plot
+  scale_fill_manual(values = c('Nesting Male' = '#065143', 'Satellite Male' = '#db5a42', 'Satellite Male Passes' = '#7A9B76','Sneaker Male' = '#1481BA')) +
+  theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
+  theme(legend.position = "none") # Removes all legends
+  
+pathways.visits
+```
+```{r}
+pathways.success.rate <- behavior_sheet_cln |>
+  #Remove nests where there are data inconsistencies
+  filter_out((female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm)/(female_visits_by_nm) > 1) |>
+  filter_out((female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn)/(female_visit_by_sat) > 1) |>
+  filter_out((female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn)/(female_visits_by_sat_passed_to_nm) > 1) |>
+  filter_out((female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)/(female_visit_by_snk) > 1)|>
+  #Create new variables that account for the pathway's proportion
+  mutate(
+    'Nesting Male' = sum(female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm)/sum(female_visits_by_nm),
+    'Satellite Male' = sum(female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn)/sum(female_visit_by_sat),
+    'Satellite Pass' = sum(female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn)/sum(female_visits_by_sat_passed_to_nm),
+    'Sneaker Male' = sum(female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)/sum(female_visit_by_snk)
+  ) |>
+  #Make the tibble only include these variables
+  dplyr::select(`Nesting Male`:`Sneaker Male`) |>
+  #Remove all the duplicates
+  distinct() |>
+  #Adjust the table to make the variables go into one coloumn
+  pivot_longer(`Nesting Male`:`Sneaker Male`,
+               names_to = 'Pathway',
+               values_to = 'Success Rate') |>
+  #Graph it
+  ggplot(aes(Pathway, `Success Rate`, fill = Pathway)) +
+  #Makes the graph a bar graph
+  geom_col(width = 0.75) +
+  labs(x = 'Visitation Pathway', 
+       y = 'Success rate',
+       title = "Spawning Success Rate based on Female Visitation Pathway",) + #edits axis and title labels
+  theme_classic() + #Sets the plot visuals
+  #Adds a color scheme to the plot
+  scale_fill_manual(values = c('Nesting Male' = '#065143', 'Satellite Male' = '#db5a42', 'Satellite Passes' = '#7A9B76','Sneaker Male' = '#1481BA')) +
+  theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
+  theme(legend.position = "none") # Removes all legends
+  
+pathways.success.rate
+```
+
+```{r}
+pathways.success.rate.total <- behavior_sheet_cln |>
+  #Remove nests where there are data inconsistencies
+  filter_out((female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm) > (total_spawns_nm_brought + total_spawns_nm_brought_sat_only_spawn)) |>
+  filter_out((female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn) > (total_spawns_sat_brought + total_spawns_sat_brought_sat_only_spawn)) |>
+  filter_out((female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn) > (total_spawns_sat_passed_to_nm + total_spawns_sat_passed_to_nm_but_sat_only_spawn))|>
+  filter_out((female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn) > (total_spawns_snk_brought + total_spawns_snk_brought_snk_only_spawn))|>
+  #Create new variables that account for the pathway's proportion
+  mutate(
+    'Nesting Male' = sum(total_spawns_nm_brought + total_spawns_nm_brought_sat_only_spawn)/sum(female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm),
+    'Satellite Male' = sum(total_spawns_sat_brought + total_spawns_sat_brought_sat_only_spawn)/sum(female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn),
+    'Satellite Pass' = sum(total_spawns_sat_passed_to_nm + total_spawns_sat_passed_to_nm_but_sat_only_spawn)/sum(female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn),
+    'Sneaker Male' = sum(total_spawns_snk_brought + total_spawns_snk_brought_snk_only_spawn)/sum(female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)
+  ) |>
+  #Make the tibble only include these variables
+  dplyr::select(`Nesting Male`:`Sneaker Male`) |>
+  #Remove all the duplicates
+  distinct() |>
+  #Adjust the table to make the variables go into one coloumn
+  pivot_longer(`Nesting Male`:`Sneaker Male`,
+               names_to = 'Pathway',
+               values_to = 'Success Rate') |>
+  #Graph it
+  ggplot(aes(Pathway, `Success Rate`, fill = Pathway)) +
+  #Makes the graph a bar graph
+  geom_col() +
+  labs(x = 'Pathway', 
+       y = 'Times Mated',
+       title = "The Number of times each Female spawned for each Visitation Pathway",) + #edits axis and title labels
+  theme_classic() + #Sets the plot visuals
+  #Adds a color scheme to the plot
+  scale_fill_manual(values = c('Nesting Male' = '#065143', 'Satellite Male' = '#db5a42', 'Satellite Pass' = '#7A9B76','Sneaker Male' = '#1481BA')) +
+  theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
+  theme(legend.position = "none") # Removes all legends
+  
+pathways.success.rate.total
+```
+
