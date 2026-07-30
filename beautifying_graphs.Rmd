@@ -159,10 +159,15 @@ pathways.visits <- behavior_sheet_cln |>
   ggplot(aes(Pathway, Proportion, fill = Pathway)) +
   #Makes the graph a bar graph
   geom_col() +
-  labs(x = 'Pathway', 
-       y = 'Proportion of total Visits',
-       title = "The Propotion of each Visitation Pathway for Female Visits",) + #edits axis and title labels
+  labs(x = 'Visit Pathway', 
+       y = 'Proportion of total visits',
+       title = "The Propotion of female visits for each pathway",) + #edits axis and title labels
   theme_classic() + #Sets the plot visuals
+  theme(title = element_text(size=14), #Makes title larger
+    axis.text = element_text(size=12), #Makes the axes writing larger
+        axis.title.x = element_text(size=13, margin = margin(t = 15)), #Makes x axis title larger and moves it away from axis
+        axis.title.y = element_text(size=13, margin = margin(r = 10)), #Makes y axis title larger and moves it away from axis
+        axis.ticks = element_line(size=1)) + #Makes acis ticks larger
   #Adds a color scheme to the plot
   scale_fill_manual(values = c('Nesting Male' = '#065143', 'Satellite Male' = '#db5a42', 'Satellite Male Passes' = '#7A9B76','Sneaker Male' = '#1481BA')) +
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
@@ -181,7 +186,7 @@ pathways.success.rate <- behavior_sheet_cln |>
   mutate(
     'Nesting Male' = sum(female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm)/sum(female_visits_by_nm),
     'Satellite Male' = sum(female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn)/sum(female_visit_by_sat),
-    'Satellite Pass' = sum(female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn)/sum(female_visits_by_sat_passed_to_nm),
+    'Satellite Male Passes' = sum(female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn)/sum(female_visits_by_sat_passed_to_nm),
     'Sneaker Male' = sum(female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)/sum(female_visit_by_snk)
   ) |>
   #Make the tibble only include these variables
@@ -195,13 +200,18 @@ pathways.success.rate <- behavior_sheet_cln |>
   #Graph it
   ggplot(aes(Pathway, `Success Rate`, fill = Pathway)) +
   #Makes the graph a bar graph
-  geom_col(width = 0.75) +
+  geom_col() +
   labs(x = 'Visitation Pathway', 
        y = 'Success rate',
-       title = "Spawning Success Rate based on Female Visitation Pathway",) + #edits axis and title labels
+       title = "Spawning success rate based on pathway",) + #edits axis and title labels
   theme_classic() + #Sets the plot visuals
+  theme(title = element_text(size=14), #Makes title larger
+        axis.text = element_text(size=12), #Makes the axes writing larger
+        axis.title.x = element_text(size=13, margin = margin(t = 15)), #Makes x axis title larger and moves it away from axis
+        axis.title.y = element_text(size=13, margin = margin(r = 10)), #Makes y axis title larger and moves it away from axis
+        axis.ticks = element_line(size=1)) +
   #Adds a color scheme to the plot
-  scale_fill_manual(values = c('Nesting Male' = '#065143', 'Satellite Male' = '#db5a42', 'Satellite Passes' = '#7A9B76','Sneaker Male' = '#1481BA')) +
+  scale_fill_manual(values = c('Nesting Male' = '#065143', 'Satellite Male' = '#db5a42', 'Satellite Male Passes' = '#7A9B76','Sneaker Male' = '#1481BA')) +
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   theme(legend.position = "none") # Removes all legends
   
@@ -219,7 +229,7 @@ pathways.success.rate.total <- behavior_sheet_cln |>
   mutate(
     'Nesting Male' = sum(total_spawns_nm_brought + total_spawns_nm_brought_sat_only_spawn)/sum(female_spawning_with_nm_brought_by_nm + female_spawning_with_only_sat_brought_by_nm),
     'Satellite Male' = sum(total_spawns_sat_brought + total_spawns_sat_brought_sat_only_spawn)/sum(female_spawning_sat_brought + females_spawing_sat_brought_sat_only_spawn),
-    'Satellite Pass' = sum(total_spawns_sat_passed_to_nm + total_spawns_sat_passed_to_nm_but_sat_only_spawn)/sum(female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn),
+    'Satellite Male Passes' = sum(total_spawns_sat_passed_to_nm + total_spawns_sat_passed_to_nm_but_sat_only_spawn)/sum(female_spawning_sat_passed_to_nm + female_spawning_sat_passed_to_nm_but_only_sat_spawn),
     'Sneaker Male' = sum(total_spawns_snk_brought + total_spawns_snk_brought_snk_only_spawn)/sum(female_spawning_snk_brought + female_spawning_snk_brought_skn_only_spawn)
   ) |>
   #Make the tibble only include these variables
@@ -234,12 +244,17 @@ pathways.success.rate.total <- behavior_sheet_cln |>
   ggplot(aes(Pathway, `Success Rate`, fill = Pathway)) +
   #Makes the graph a bar graph
   geom_col() +
-  labs(x = 'Pathway', 
+  labs(x = 'Visitation Pathway', 
        y = 'Times Mated',
-       title = "The Number of times each Female spawned for each Visitation Pathway",) + #edits axis and title labels
+       title = "Average number of times a female spawned for each pathway",) + #edits axis and title labels
   theme_classic() + #Sets the plot visuals
+  theme(title = element_text(size=14), #Makes title larger
+        axis.text = element_text(size=12), #Makes the axes writing larger
+        axis.title.x = element_text(size=13, margin = margin(t = 15)), #Makes x axis title larger and moves it away from axis
+        axis.title.y = element_text(size=13, margin = margin(r = 10)), #Makes y axis title larger and moves it away from axis
+        axis.ticks = element_line(size=1)) +
   #Adds a color scheme to the plot
-  scale_fill_manual(values = c('Nesting Male' = '#065143', 'Satellite Male' = '#db5a42', 'Satellite Pass' = '#7A9B76','Sneaker Male' = '#1481BA')) +
+  scale_fill_manual(values = c('Nesting Male' = '#065143', 'Satellite Male' = '#db5a42', 'Satellite Male Passes' = '#7A9B76','Sneaker Male' = '#1481BA')) +
   theme(plot.title = element_text(hjust = 0.5)) + #Moves title to the middle
   theme(legend.position = "none") # Removes all legends
   
