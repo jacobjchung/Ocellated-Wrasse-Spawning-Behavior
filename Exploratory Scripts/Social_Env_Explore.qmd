@@ -1,0 +1,153 @@
+---
+title: "Social_Env_Explore"
+format: html
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+# Tidy Code
+
+First run our library list (Install first if you don't have these
+packages).
+
+```{r}
+#Install and library important packages
+#install.packages('ggplot2')
+#install.packages('ggeffects')
+#install.packages('RColorBrewer')
+#install.packages('here')
+#install.packages('MASS')
+#install.packages('tidyverse')
+#install.packages('janitor')
+#install.packages('readxl')
+#install.packages('brms')
+library(ggeffects)
+library(tidyverse)
+library(janitor)
+library(here)
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(brms)
+library(RColorBrewer)
+library(tibble)
+library(MASS)
+```
+
+### Importing the data sheet
+
+```{r}
+behavior_sheet <- read_excel("UW_Nest_Behavioral_Sheets_Cleaned.xlsx")
+head(behavior_sheet)
+```
+
+### Separating the date column and placing it near the original Date column for filtering ease later on.
+
+```{r}
+behavior_sheet_date <- as.Date(behavior_sheet$Date)
+behavior_sheet$Date <- behavior_sheet_date
+behavior_sheet_sep <- behavior_sheet %>%
+  mutate(Year = year(Date)) %>%
+  mutate(Month = month(Date)) %>%
+  mutate(Day = day(Date)) %>%
+  relocate(Year, .after = Date) %>%
+  relocate(Month, .after = Year) %>%
+  relocate(Day, .after = Month)
+head(behavior_sheet_sep)
+
+#Fix SAT submission to NM from chr to num
+sat_sub <- as.numeric(behavior_sheet_sep$`SAT submission to NM`) #Creates a vector with the same entries but as numbers
+behavior_sheet_sep$`SAT submission to NM` <- sat_sub #put it back into the tibble
+#Do the same for SNK Submission to SAT
+snk_sub <- as.numeric(behavior_sheet_sep$`SNK submission to SAT`)
+behavior_sheet_sep$`SNK submission to SAT` <- snk_sub
+#Same for NM aggression to SAT
+NM_aggsat <- as.numeric(behavior_sheet_sep$`NM aggression to SAT`)
+behavior_sheet_sep$`NM aggression to SAT` <- NM_aggsat
+```
+
+### Create a tibble with cleaned names
+
+This chunk will be useful when creating and running models later on
+because it "standardizes" the column names.
+
+```{r}
+behavior_sheet_cln <- behavior_sheet_sep |>
+  #Uses the Janitor package to standardize the names
+  clean_names()
+
+#Turn the year variable into a character for ease of comparison later on
+year_date <- as.character(behavior_sheet_cln$year) #Creates a vector with years as chr
+behavior_sheet_cln$year <- year_date #creates a new variable for ease of graphing later on
+```
+
+### Social Environment sizes
+We want to get an understanding about how the size of the social environment affects female mate choice. First, let's calculate the size of the social environment
+```{r}
+behave_sheet_social_size <- behavior_sheet_cln |>
+  mutate('social_env_size' = 2 + average_snk + total_female_visits) #Gives us an estimates social environment size at the nest
+```
+
+Then we want to see if the number of females that spawned correlates with social environment size
+```{r}
+f_visits_envsize <- behave_sheet_social_size |>
+  ggplot(aes(social_env_size, total_female_spawning)) + #gives ggplot dimensions
+  geom_point() + #makes the plot a scatterplot
+    geom_smooth(method = (lm)) +
+  labs(title = 'Total Number of Females that Spawned as Function of Social Environment Size',
+       x = 'Social Environment Size',
+       y = "Total Females that Spawned") +
+  theme_classic() + #Sets the plot visuals
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
+  
+
+f_visits_envsize
+```
+
+```{r}
+fspawn.socenvsize.mdl <-
+  brm(data = behave_sheet_social_size, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_female_spawning ~ social_env_size, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fspawn.socenvsize.mdl') #saves it as an output
+
+summary(fspawn.socenvsize.mdl)
+plot(fspawn.socenvsize.mdl)
+```
+Based on our results, we see that given our model, we can suggest that for every additional individual at a nest, there is a 0.36 increase in number of females that spawn at a nest. Our 95% credibility interval gives us 0.31-0.41, allowing us to suggest that this effect is different from zero. 
+
+What about how many times a female spawns
+
+```{r}
+f_tspawns_envsize <- behave_sheet_social_size |>
+  ggplot(aes(social_env_size, total_spawns)) + #gives ggplot dimensions
+  geom_point() + #makes the plot a scatterplot
+  geom_smooth(method = (lm)) +
+  labs(title = 'Total Spawns as Function of Social Environment Size',
+       x = 'Social Environment Size',
+       y = "Total Spawns") +
+  theme_classic() + #Sets the plot visuals
+  theme(plot.title = element_text(hjust = 0.5)) #Moves title to the middle
+  
+
+f_tspawns_envsize
+```
+
+
+
+```{r}
+fmultispawn.socenvsize.mdl <-
+  brm(data = behave_sheet_social_size, #Give the model the tibble
+      family = gaussian, #Tell model what type of distribution
+      total_spawns ~ social_env_size, #Specifying the model
+      iter = 2000, warmup = 1000, chains = 4, cores = 4, #Markov chain parameters
+      seed = 4, #Determines which random numbers
+      file = 'Exploratory model outputs/fmultispawn.socenvsize.mdl') #saves it as an output
+
+summary(fmultispawn.socenvsize.mdl)
+plot(fmultispawn.socenvsize.mdl)
+```
+Based on our results, we see that given our model, we can suggest that for every additional individual at a nest, there is a 0.53 increase in number times a female will spawn at a nest. Our 95% credibility interval gives us 0.44-0.60, allowing us to suggest that this effect is different from zero. 
